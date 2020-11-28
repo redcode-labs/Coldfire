@@ -105,7 +105,7 @@ func remove_newlines(s string) string
     Removes "\n" and "\r" characters from string.
 
 func full_remove(str string, to_remove string) string 
-    Removes all occurences of substring.
+    Removes all occurrences of substring.
 
 func remove_duplicates_str(slice []string) []string 
     Removes duplicates from string slice.
@@ -158,7 +158,7 @@ func ip_global() string
     Returns a global IP address of the machine.
     
 func is_root() bool
-    Check if user has administrative privilleges.
+    Check if user has administrative privileges.
     
 func processes() (map[int]string, error)
     Returns all processes' PIDs and their corresponding names.
@@ -252,7 +252,7 @@ func download(url string) error
 func pkill_pid(pid int) error
     Kill process by PID.
 
-func pkill_name(name string) errror
+func pkill_name(name string) error
     Kill all processes that contain [name].
 
 func pkill_av() err
@@ -282,7 +282,7 @@ func sandbox_proc() bool
     Detect sandbox by looking for common sandbox processes.
 
 func sandbox_sleep() bool
-    Detect sandbox by looking for sleep-accelleration mechanism.
+    Detect sandbox by looking for sleep-acceleration mechanism.
 
 func sandbox_disk(size int) bool
     Detect sandbox by looking for abnormally small disk size.

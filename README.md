@@ -245,6 +245,9 @@ func SendDataUdp(host string, port int, data string) error
     
 func Download(url string) error
     Downloads a file from url and save it under the same name.
+
+func CopyFile(src string, dst string) error
+    Copy a file from one place to another
 ```
 
 ### Evasion functions

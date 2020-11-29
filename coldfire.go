@@ -179,31 +179,31 @@ func f(str string, arg ...interface{}) string {
 	return fmt.Sprintf(str, arg...)
 }
 
-func print_good(msg string) {
+func PrintGood(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] %s :: %s ", green(t), green(bold("[+]")), msg)
 }
 
-func print_info(msg string) {
+func PrintInfo(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] [*] :: %s", t, msg)
 }
 
-func print_error(msg string) {
+func PrintError(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] %s :: %s ", red(t), red(bold("[x]")), msg)
 }
 
-func print_warning(msg string) {
+func PrintWarning(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] %s :: %s ", yellow(t), yellow(bold("[!]")), msg)
 }
 
-func file_to_slice(file string) []string {
+func FileToSlice(file string) []string {
 	fil, _ := os.Open(file)
 	defer fil.Close()
 	var lines []string
@@ -214,7 +214,7 @@ func file_to_slice(file string) []string {
 	return lines
 }
 
-func contains(s interface{}, elem interface{}) bool {
+func Contains(s interface{}, elem interface{}) bool {
 	arrV := reflect.ValueOf(s)
 	if arrV.Kind() == reflect.Slice {
 		for i := 0; i < arrV.Len(); i++ {
@@ -226,13 +226,13 @@ func contains(s interface{}, elem interface{}) bool {
 	return false
 }
 
-func str_to_int(string_integer string) int {
+func StrToInt(string_integer string) int {
 	//i, _ := strconv.ParseInt(string_integer, 10, 32)
 	i, _ := strconv.Atoi(string_integer)
 	return i
 }
 
-func str_to_words(s string) []string {
+func StrToWords(s string) []string {
 	words := []string{}
 	gr := strings.Split(s, " ")
 	for x := range gr {
@@ -244,11 +244,11 @@ func str_to_words(s string) []string {
 	return words
 }
 
-func int_to_str(i int) string {
+func IntToStr(i int) string {
 	return strconv.Itoa(i)
 }
 
-func size_to_bytes(size string) int {
+func SizeToBytes(size string) int {
 	period_letter := string(size[len(size)-1])
 	intr := string(size[:len(size)-1])
 	i, _ := strconv.Atoi(intr)
@@ -263,11 +263,11 @@ func size_to_bytes(size string) int {
 	return i
 }
 
-func alloc(size string) {
+func Alloc(size string) {
 	_ = make([]byte, size_to_bytes(size))
 }
 
-func interval_to_seconds(interval string) int {
+func IntervalToSeconds(interval string) int {
 	period_letter := string(interval[len(interval)-1])
 	intr := string(interval[:len(interval)-1])
 	i, _ := strconv.Atoi(intr)
@@ -282,7 +282,7 @@ func interval_to_seconds(interval string) int {
 	return i
 }
 
-func gen_cpu_load(cores int, interval string, percentage int) {
+func GenCpuLoad(cores int, interval string, percentage int) {
 	runtime.GOMAXPROCS(cores)
 	unitHundresOfMicrosecond := 1000
 	runMicrosecond := unitHundresOfMicrosecond * percentage
@@ -319,22 +319,22 @@ func RandomSelectStrNested(list [][]string) []string {
 	return list[rand.Intn(len(list))]
 }
 
-func random_select_int(list []int) int {
+func RandomSelectInt(list []int) int {
 	rand.Seed(time.Now().UnixNano())
 	return list[rand.Intn(len(list))]
 }
 
-func remove_newlines(s string) string {
+func RemoveNewlines(s string) string {
 	re := regexp.MustCompile(`\r?\n`)
 	s = re.ReplaceAllString(s, " ")
 	return s
 }
 
-func full_remove(str string, to_remove string) string {
+func FullRemove(str string, to_remove string) string {
 	return strings.Replace(str, to_remove, "", -1)
 }
 
-func remove_duplicates_str(slice []string) []string {
+func RemoveDuplicatesStr(slice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
 	for _, entry := range slice {
@@ -346,7 +346,7 @@ func remove_duplicates_str(slice []string) []string {
 	return list
 }
 
-func remove_duplicates_int(slice []int) []int {
+func RemoveDuplicatesInt(slice []int) []int {
 	keys := make(map[int]bool)
 	list := []int{}
 	for _, entry := range slice {
@@ -358,7 +358,7 @@ func remove_duplicates_int(slice []int) []int {
 	return list
 }
 
-func contains_any(str string, elements []string) bool {
+func ContainsAny(str string, elements []string) bool {
 	for element := range elements {
 		e := elements[element]
 		if strings.Contains(str, e) {
@@ -368,7 +368,7 @@ func contains_any(str string, elements []string) bool {
 	return false
 }
 
-func random_string(n int) string {
+func RandomString(n int) string {
 	rand.Seed(time.Now().UnixNano())
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	b := make([]rune, n)

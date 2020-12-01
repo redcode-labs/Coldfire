@@ -1550,6 +1550,18 @@ func CopyFile(src, dst string) error {
 	return err
 }
 
+func CurrentDirFiles() ([]string, error) {
+	files_in_dir := []string{}
+	files, err := ioutil.ReadDir(".")
+	if err != nil {
+		return nil, err
+	}
+	for _, f := range files {
+		files_in_dir = append(files_in_dir, f.Name())
+	}
+	return files_in_dir, nil
+}
+
 /*
 func dialog(message, title string) {
 

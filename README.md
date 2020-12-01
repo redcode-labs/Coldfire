@@ -248,6 +248,9 @@ func Download(url string) error
 
 func CopyFile(src string, dst string) error
     Copy a file from one place to another
+
+func CurrentDirFiles() []string, error
+    Returns list of files from current directory
 ```
 
 ### Evasion functions

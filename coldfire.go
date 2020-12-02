@@ -646,7 +646,7 @@ func B64E(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
-func wait(interval string) {
+func Wait(interval string) {
 	period_letter := string(interval[len(interval)-1])
 	intr := string(interval[:len(interval)-1])
 	i, _ := strconv.ParseInt(intr, 10, 64)

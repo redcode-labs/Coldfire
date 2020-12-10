@@ -1532,6 +1532,10 @@ func RemoveInt(slice []int, s int) []int {
 	return final
 }
 
+func RandomIntRange(min, max int) int {
+	return rand.Intn(max-min) + min
+}
+
 /*
 func dialog(message, title string) {
 

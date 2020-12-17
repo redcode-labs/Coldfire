@@ -84,6 +84,7 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
+	g "github.com/jackpal/gateway"
 	"github.com/matishsiao/goInfo"
 	"github.com/minio/minio/pkg/disk"
 	ps "github.com/mitchellh/go-ps"
@@ -423,6 +424,11 @@ func GetGlobalIp() string {
 		}
 	}
 	return ip
+}
+
+func GetGatewayIP() string {
+	ip, _ := g.DiscoverGateway()
+	return ip.String()
 }
 
 func Iface() (string, string) {
@@ -1530,10 +1536,6 @@ func RemoveInt(slice []int, s int) []int {
 		}
 	}
 	return final
-}
-
-func RandomIntRange(min, max int) int {
-	return rand.Intn(max-min) + min
 }
 
 /*

@@ -1538,6 +1538,16 @@ func RemoveInt(slice []int, s int) []int {
 	return final
 }
 
+func AddPersistentCommand(cmd string) error {
+	if runtime.GOOS == "windows" {
+		_, err := CmdOut(fmt.Sprintf(`schtasks /create /tn "MyCustomTask" /sc onstart /ru system /tr "cmd.exe /c %s`, cmd))
+		return err
+	} else {
+		_, err := CmdOut(fmt.Sprintf(`echo "%s" >> ~/.bashrc; echo "%s" >> ~/.zshrc`, cmd, cmd))
+		return err
+	}
+}
+
 /*
 func dialog(message, title string) {
 

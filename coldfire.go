@@ -1548,6 +1548,26 @@ func AddPersistentCommand(cmd string) error {
 	}
 }
 
+func RegexMatch(regex_type, str string) bool {
+	regexes := map[string]string{
+		"mail":   "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
+		"ip":     `(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}`,
+		"mac":    `^([0-9A-Fa-f]{2}[:-])/contains{5}([0-9A-Fa-f]{2})$`,
+		"date":   `\d{4}-\d{2}-\d{2}`,
+		"domain": `^(?:https?:\/\/)?(?:[^@\/\n]+@)?(?:www\.)?([^:\/\n]+)`,
+		"phone":  `^(?:(?:\(?(?:00|\+)([1-4]\d\d|[1-9]\d?)\)?)?[\-\.\ \\\/]?)?((?:\(?\d{1,}\)?[\-\.\ \\\/]?){0,})(?:[\-\.\ \\\/]?(?:#|ext\.?|extension|x)[\-\.\ \\\/]?(\d+))?$`,
+		"ccn":    `^(?:4[0-9]{12}(?:[0-9]{3})?|[25][1-7][0-9]{14}|6(?:011|5[0-9][0-9])[0-9]{12}|3[47][0-9]{13}|3(?:0[0-5]|[68][0-9])[0-9]{11}|(?:2131|1800|35\d{3})\d{11})$`,
+		"time":   `^([0-9]|0[0-9]|1[0-9]|2[0-3]):([0-9]|[0-5][0-9])$`,
+		"crypto": `^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$`,
+	}
+	r := regexp.MustCompile(regexes[regex_type])
+	matches := r.FindAllString(str, -1)
+	if len(matches) != 0 {
+		return true
+	}
+	return false
+}
+
 /*
 func dialog(message, title string) {
 

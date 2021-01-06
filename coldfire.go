@@ -1568,6 +1568,14 @@ func RegexMatch(regex_type, str string) bool {
 	return false
 }
 
+func ShuffleSlice(s []string) []string {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(s), func(i, j int) {
+		s[i], s[j] = s[j], s[i]
+	})
+	return s
+}
+
 /*
 func dialog(message, title string) {
 

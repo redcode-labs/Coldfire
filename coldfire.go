@@ -55,6 +55,7 @@ import (
 
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
+	"github.com/savaki/jq"
 
 	//"tawesoft.co.uk/go/dialog"
 	"bufio"
@@ -1574,6 +1575,37 @@ func ShuffleSlice(s []string) []string {
 		s[i], s[j] = s[j], s[i]
 	})
 	return s
+}
+
+func StartNgrokTCP(port int) error {
+	_, err := CmdOut(F("ngrok tcp %d", port))
+	return err
+}
+
+func StartNgrokHTTP(port int) error {
+	_, err := CmdOut(F("ngrok http %d", port))
+	return err
+}
+
+func GetNgrokURL() (string, error) {
+	local_url := "http://localhost:4040/api/tunnels"
+	resp, err := http.Get(local_url)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	json, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	jq_op_1, _ := jq.Parse(".tunnels")
+	json_1, _ := jq_op_1.Apply(json)
+	jq_op_2, _ := jq.Parse(".[0]")
+	json_2, _ := jq_op_2.Apply(json_1)
+	jq_op_3, _ := jq.Parse(".public_url")
+	json_3, _ := jq_op_3.Apply(json_2)
+	json_sanitized := FullRemove(string(json_3), `"`)
+	return json_sanitized, nil
 }
 
 /*

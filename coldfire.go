@@ -1608,6 +1608,17 @@ func GetNgrokURL() (string, error) {
 	return json_sanitized, nil
 }
 
+func ExtractIntFromString(s string) []int {
+	res := []int{}
+	re := regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
+	//fmt.Printf("String contains any match: %v\n", re.MatchString(str1)) // True
+	submatchall := re.FindAllString(str1, -1)
+	for _, element := range submatchall {
+		res = append(res, IntToStr(element))
+	}
+	return res
+}
+
 /*
 func dialog(message, title string) {
 

@@ -36,7 +36,7 @@ Most functions are compatible with both Linux and Windows operating systems.
 
 ## Installation
 
-`go get https://github.com/redcode-labs/ColdFire`
+`go get github.com/redcode-labs/ColdFire`
 
 ## Types of functions included
 

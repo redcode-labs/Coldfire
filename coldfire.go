@@ -654,7 +654,7 @@ func IsRoot() bool {
 		}
 	default:
 		u, _ := CmdOut("whoami")
-		root = strings.Contains(u, "root")
+		root = (strings.TrimSuffix(u, "\n") == "root")
 	}
 	return root
 }

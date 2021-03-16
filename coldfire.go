@@ -656,9 +656,7 @@ func IsRoot() bool {
 		}
 	default:
 		u, _ := CmdOut("whoami")
-		if strings.Contains(u, "root") {
-			root = true
-		}
+		root = (strings.TrimSuffix(u, "\n") == "root")
 	}
 	return root
 }
@@ -1506,6 +1504,8 @@ func CopyFile(src, dst string) error {
 		return err
 	}
 	defer destination.Close()
+	
+	_, err := io.Copy(destination, source)
 	return err
 }
 

@@ -97,6 +97,11 @@ var green = color.New(color.FgGreen).SprintFunc()
 var cyan = color.New(color.FgBlue).SprintFunc()
 var bold = color.New(color.Bold).SprintFunc()
 var yellow = color.New(color.FgYellow).SprintFunc()
+var Red = color.New(color.FgRed).SprintFunc()
+var Green = color.New(color.FgGreen).SprintFunc()
+var Cyan = color.New(color.FgBlue).SprintFunc()
+var Bold = color.New(color.Bold).SprintFunc()
+var Yellow = color.New(color.FgYellow).SprintFunc()
 
 func Revert(s string) string {
 	r := []rune(s)
@@ -433,9 +438,6 @@ func GetGatewayIP() string {
 }
 
 func Iface() (string, string) {
-	addrs, err := net.InterfaceAddrs()
-	_ = addrs
-	ExitOnError(err)
 	current_iface := ""
 	interfaces, _ := net.Interfaces()
 	for _, interf := range interfaces {

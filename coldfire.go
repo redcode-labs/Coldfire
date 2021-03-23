@@ -522,8 +522,9 @@ func Info() map[string]string {
 		"core":      fmt.Sprintf("%v", i.Core),
 		"local_ip":  GetLocalIp(),
 		"global_ip": GetGlobalIp(),
-		"ap_ip":     ap_ip,
+		"ap_ip":     GetGatewayIP(),
 		"mac":       mac,
+		"homedir":   homedir,
 	}
 	return inf
 }

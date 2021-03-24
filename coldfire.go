@@ -1634,6 +1634,12 @@ func ExtractIntFromString(s string) []int {
 	return res
 }
 
+func SplitJoin(s, splitter, joiner string) string{
+	splitted := strings.Split(s, splitter)
+	joined := strings.Join(splitted, joiner)
+	return joined
+}
+
 /*
 func dialog(message, title string) {
 

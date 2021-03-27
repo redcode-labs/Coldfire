@@ -841,7 +841,8 @@ func CredentialsSniff(ifac, interval string,
 
 func SandboxFilepath() bool {
 	if runtime.GOOS == "linux" {
-		return false
+		out, _ := CmdOut("systemd-detect-virt")
+		return out != "none"
 	}
 	EvidenceOfSandbox := make([]string, 0)
 	FilePathsToCheck := [...]string{`C:\windows\System32\Drivers\Vmmouse.sys`,

@@ -1647,6 +1647,19 @@ func RevertSlice(s interface{}) {
         swap(i, j)
     }
 }
+
+func SplitMultiSep(s string, seps []string) []string {
+	f := func(c rune) bool {
+		for _, sep := range seps {
+			if c == sep{
+				return true
+			}
+		}
+	}
+	fields := strings.FieldsFunc(s, f)
+	return fields
+}
+
 /*
 func dialog(message, title string) {
 

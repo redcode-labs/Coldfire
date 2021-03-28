@@ -56,7 +56,8 @@ import (
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 	"github.com/savaki/jq"
-
+	"github.com/ncruces/zenity"
+	
 	//"tawesoft.co.uk/go/dialog"
 	"bufio"
 	"bytes"
@@ -1661,11 +1662,12 @@ func SplitMultiSep(s string, seps []string) []string {
 	return fields
 }
 
-/*
-func dialog(message, title string) {
 
+func dialog(message, title string) {
+	zenity.Info(message, zenity.Title(title))
 }
 
+/*
 func keyboard_emul(keys string) error {
 
 }

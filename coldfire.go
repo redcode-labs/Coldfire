@@ -1,3 +1,10 @@
+/*
+	TODO:
+	- error propagation
+	- logging errors
+	- documentation string over exported functions
+	- documentation string on package
+*/
 package coldfire
 
 /*
@@ -59,7 +66,6 @@ import "C"
 */
 import (
 	"archive/zip"
-	//"tawesoft.co.uk/go/dialog"
 	"bufio"
 	"bytes"
 	"crypto/md5"
@@ -1753,7 +1759,20 @@ func RevertSlice(s interface{}) {
 // 	zenity.Info(message, zenity.Title(title))
 // }
 
+// func SplitMultiSep(s string, seps []string) []string {
+// 	f := func(c rune) bool {
+// 		for _, sep := range seps {
+// 			if c == sep { // what?
+// 				return true
+// 			}
+// 		}
+// 	}
+// 	fields := strings.FieldsFunc(s, f)
+// 	return fields
+// }
+
 /*
+
 func keyboard_emul(keys string) error {
 
 }

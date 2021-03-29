@@ -1,10 +1,3 @@
-/*
-	TODO:
-	- error propagation
-	- logging errors
-	- documentation string over exported functions
-	- documentation string on package
-*/
 package coldfire
 
 /*

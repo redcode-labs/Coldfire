@@ -96,13 +96,14 @@ var red = color.New(color.FgRed).SprintFunc()
 var green = color.New(color.FgGreen).SprintFunc()
 var cyan = color.New(color.FgBlue).SprintFunc()
 var bold = color.New(color.Bold).SprintFunc()
-var yellow = color.New(color.FgYellow).SprintFunc()
 var Red = color.New(color.FgRed).SprintFunc()
 var Green = color.New(color.FgGreen).SprintFunc()
+var Magenta = color.New(color.FgMagenta).SprintFunc()
 var Cyan = color.New(color.FgCyan).SprintFunc()
 var Blue = color.New(color.FgBlue).SprintFunc()
 var Bold = color.New(color.Bold).SprintFunc()
 var Yellow = color.New(color.FgYellow).SprintFunc()
+var yellow = color.New(color.FgYellow).SprintFunc()
 
 func Revert(s string) string {
 	r := []rune(s)
@@ -292,6 +293,8 @@ func IntervalToSeconds(interval string) int {
 		return i * 60
 	case "h":
 		return i * 3600
+	case "d":
+		return i * 24 * 3600
 	}
 	return i
 }
@@ -477,6 +480,7 @@ func Info() map[string]string {
 	_, mac := Iface()
 	u := ""
 	ap_ip := ""
+	_ = ap_ip
 	i := goInfo.GetInfo()
 	switch runtime.GOOS {
 	case "windows":
@@ -529,7 +533,7 @@ func Info() map[string]string {
 		"global_ip": GetGlobalIp(),
 		"ap_ip":     GetGatewayIP(),
 		"mac":       mac,
-		"homedir":   homedir,
+		//"homedir":   homedir,
 	}
 	return inf
 }
@@ -1657,13 +1661,35 @@ func RevertSlice(s interface{}) {
 func SplitMultiSep(s string, seps []string) []string {
 	f := func(c rune) bool {
 		for _, sep := range seps {
-			if c == sep{
+			if string(c) == sep{
 				return true
 			}
 		}
+		return false
 	}
 	fields := strings.FieldsFunc(s, f)
 	return fields
+}
+
+func SplitChunks(s string, chunk int) []string{
+	if chunk >= len(s){
+		return []string{s}
+	}
+	var chunks []string
+	c := make([]rune, chunk)
+	len := 0
+	for _, r := range s{
+		c[len] = r
+		len++
+		if len == chunk {
+			chunks = append(chunks, string(c))
+			len = 0
+		}
+	}
+	if len > 0{
+		chunks = append(chunks, string(c[:len]))
+	}
+	return chunks
 }
 
 /*

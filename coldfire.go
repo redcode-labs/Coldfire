@@ -1611,10 +1611,6 @@ func DecryptBytes(encrypted_message []byte, key []byte) []byte {
 	var writer bytes.Buffer
 	base64.NewDecoder(base64.StdEncoding, &writer)
 	decoded := writer.Bytes()
-	_, error := base64.StdEncoding.Decode(decoded, decrypted)
-	if error != nil {
-		println("Decoding failed")
-	}
 
 	return decoded
 }

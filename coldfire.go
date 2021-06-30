@@ -1573,24 +1573,55 @@ func GenerateIV() []byte {
 	return random_bytes
 }
 
-func EncryptBytes(secret_message []byte, key []byte) {
+func EncryptBytes(secret_message []byte, key []byte) []byte {
 	cipher_block, err := aes.NewCipher(key)
 	if err != nil {
 		println("Error occured, can't encrypt")
 	}
 	encoded := make([]byte, 0)
 	base64.StdEncoding.Encode(encoded, secret_message)
-
+	IV := GenerateIV()
 	if len(encoded)%16 != 0 {
 		appending := make([]byte, len(encoded)%16)
 		corrected := append(encoded, appending...)
 		encoded = corrected
 	}
-	c := cipher.NewCBCEncrypter(cipher_block, GenerateIV())
+	c := cipher.NewCBCEncrypter(cipher_block, IV)
 	encrypted := make([]byte, len(encoded))
 	c.CryptBlocks(encrypted, encoded)
+
+	return append(IV, encrypted...)
 }
 
-func DecryptBytes(encrypted_message []byte, key []byte) {
+func DecryptBytes(encrypted_message []byte, key []byte) []byte {
+	IV := encrypted_message[0:16]
+	actual_ciphertext := encrypted_message[16:]
 
+	cipher_block, err := aes.NewCipher(key)
+	if err != nil {
+		println("Error occured, can't decrypt")
+	}
+	c := cipher.NewCBCDecrypter(cipher_block, IV)
+	decrypted := make([]byte, len(actual_ciphertext))
+	c.CryptBlocks(decrypted, actual_ciphertext)
+	found_null := false
+	var first_null int
+	for i := 0; i < len(decrypted); i++ {
+		if decrypted[i] == 0 {
+			found_null = true
+			first_null = i
+			break
+		}
+	}
+	if found_null {
+		decrypted = decrypted[0:(first_null - 1)]
+	}
+
+	decoded := make([]byte, 0)
+	_, error := base64.StdEncoding.Decode(decoded, decrypted)
+	if error != nil {
+		println("Decoding failed")
+	}
+
+	return decoded
 }

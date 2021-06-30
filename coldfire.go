@@ -869,10 +869,11 @@ func SandboxSleep() bool {
 
 // SandboxDisk is used to check if the environment's
 // disk space is less than a given size.
+/* sandboxDisk is missing dependency
 func SandboxDisk(size int) bool {
 	return sandboxDisk(size)
 }
-
+*/
 // SandboxCpu is used to check if the environment's
 // cores are less than a given integer.
 func SandboxCpu(cores int) bool {
@@ -946,7 +947,7 @@ func SandboxAll() bool {
 		SandboxProc(),
 		SandboxFilepath(),
 		SandboxCpu(2),
-		SandboxDisk(50),
+		// SandboxDisk(50), Missing dependency
 		SandboxSleep(),
 		SandboxTmp(10),
 		SandboxProcnum(100),
@@ -973,7 +974,7 @@ func SandboxAlln(num int) bool {
 		SandboxProc(),
 		SandboxFilepath(),
 		SandboxCpu(2),
-		SandboxDisk(50),
+		// SandboxDisk(50), Missing dependency
 		SandboxSleep(),
 		SandboxTmp(10),
 		SandboxTmp(100),

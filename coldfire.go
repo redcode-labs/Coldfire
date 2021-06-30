@@ -1608,9 +1608,10 @@ func DecryptBytes(encrypted_message []byte, key []byte) []byte {
 	decrypted := make([]byte, len(actual_ciphertext))
 	c.CryptBlocks(decrypted, actual_ciphertext)
 
-	var writer bytes.Buffer
-	base64.NewDecoder(base64.StdEncoding, &writer)
-	decoded := writer.Bytes()
+	var read_buffer bytes.Buffer
+	reader := base64.NewDecoder(base64.StdEncoding, &read_buffer)
+	reader.Read(decrypted)
+	decoded := read_buffer.Bytes()
 
 	return decoded
 }

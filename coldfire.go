@@ -1287,9 +1287,7 @@ func RdnsLookup(ip string) ([]string, error) {
 }
 
 // CreateUser creates a user with a given username and password.
-func CreateUser(username, password string) error {
-	return CreateUser(username, password)
-}
+// TODO
 
 // WifiDisconnect is used to disconnect the machine from a wireless network.
 func WifiDisconnect() error {
@@ -1595,5 +1593,5 @@ func EncryptBytes(secret_message []byte, key []byte) {
 }
 
 func DecryptBytes(encrypted_message []byte, key []byte) {
-	
+
 }

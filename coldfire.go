@@ -1577,10 +1577,13 @@ func EncryptBytes(secret_message []byte, key []byte) []byte {
 	cipher_block, err := aes.NewCipher(key)
 	if err != nil {
 		println("Error occured, can't encrypt")
+		return nil
 	}
 
 	var writer bytes.Buffer
-	base64.NewEncoder(base64.StdEncoding, &writer)
+	stream_encoder := base64.NewEncoder(base64.StdEncoding, &writer)
+	stream_encoder.Write(secret_message)
+	stream_encoder.Close()
 	encoded := writer.Bytes()
 
 	IV := GenerateIV()
@@ -1589,6 +1592,7 @@ func EncryptBytes(secret_message []byte, key []byte) []byte {
 		corrected := append(encoded, appending...)
 		encoded = corrected
 	}
+
 	c := cipher.NewCBCEncrypter(cipher_block, IV)
 	encrypted := make([]byte, len(encoded))
 	c.CryptBlocks(encrypted, encoded)
@@ -1598,6 +1602,7 @@ func EncryptBytes(secret_message []byte, key []byte) []byte {
 
 func DecryptBytes(encrypted_message []byte, key []byte) []byte {
 	IV := encrypted_message[0:16]
+
 	actual_ciphertext := encrypted_message[16:]
 
 	cipher_block, err := aes.NewCipher(key)
@@ -1607,11 +1612,14 @@ func DecryptBytes(encrypted_message []byte, key []byte) []byte {
 	c := cipher.NewCBCDecrypter(cipher_block, IV)
 	decrypted := make([]byte, len(actual_ciphertext))
 	c.CryptBlocks(decrypted, actual_ciphertext)
+	decrypted_reader := bytes.NewReader(decrypted)
+	decoded_buffer := make([]byte, len(actual_ciphertext))
+	stream_decoder := base64.NewDecoder(base64.StdEncoding, decrypted_reader)
+	_, error := stream_decoder.Read(decoded_buffer)
+	if error != nil {
+		println("Decoding failed! Error: ", error.Error())
+	}
 
-	var read_buffer bytes.Buffer
-	reader := base64.NewDecoder(base64.StdEncoding, &read_buffer)
-	reader.Read(decrypted)
-	decoded := read_buffer.Bytes()
-
-	return decoded
+	println("Length decrypted: ", len(decoded_buffer))
+	return decoded_buffer
 }

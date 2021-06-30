@@ -24,15 +24,10 @@ func killProcByPID(pid int) error {
 }
 
 func info() string {
-	var (
-		u string
-	)
-
 	user, err := cmdOut("query user")
 	if err != nil {
 		user = "N/A"
 	}
-	u = user
 
 	// o, err := cmdOut("ipconfig")
 	// if err != nil {

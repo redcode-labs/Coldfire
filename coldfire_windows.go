@@ -232,7 +232,7 @@ func wipe() error {
 	return nil
 }
 
-func createUser(username, password string) error {
+func CreateUser(username, password string) error {
 	cmd := f("net user %s %s /ADD", username, password)
 
 	_, err := cmdOut(cmd)

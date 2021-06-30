@@ -7,7 +7,10 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/md5"
+	crandom "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
@@ -1552,3 +1555,45 @@ func stamp() {
 func detect_user_interaction() (bool, error) {
 
 }*/
+
+func GenerateKey() []byte {
+	random_bytes := make([]byte, 32)
+	_, err := crandom.Read(random_bytes) // Generates 32 cryptographically secure random bytes
+	if err != nil {
+		println("Failed to generate the key.")
+		return nil
+	}
+	return random_bytes
+}
+
+func GenerateIV() []byte {
+	random_bytes := make([]byte, 16)
+	_, err := crandom.Read(random_bytes) // Generates 16 cryptographically secure random bytes
+	if err != nil {
+		println("Failed to generate IV.")
+		return nil
+	}
+	return random_bytes
+}
+
+func EncryptBytes(secret_message []byte, key []byte) {
+	cipher_block, err := aes.NewCipher(key)
+	if err != nil {
+		println("Error occured, can't encrypt")
+	}
+	encoded := make([]byte, 0)
+	base64.StdEncoding.Encode(encoded, secret_message)
+
+	if len(encoded)%16 != 0 {
+		appending := make([]byte, len(encoded)%16)
+		corrected := append(encoded, appending...)
+		encoded = corrected
+	}
+	c := cipher.NewCBCEncrypter(cipher_block, GenerateIV())
+	encrypted := make([]byte, len(encoded))
+	c.CryptBlocks(encrypted, encoded)
+}
+
+func DecryptBytes(encrypted_message []byte, key []byte) {
+	
+}

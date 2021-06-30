@@ -50,7 +50,6 @@ var (
 	Bold    = color.New(color.Bold).SprintFunc()
 	Yellow  = color.New(color.FgYellow).SprintFunc()
 	Magenta = color.New(color.FgMagenta).SprintFunc()
-	yellow  = color.New(color.FgYellow).SprintFunc()
 )
 
 // Revert returns a reversed string.

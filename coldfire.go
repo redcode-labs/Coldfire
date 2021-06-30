@@ -1580,22 +1580,21 @@ func EncryptBytes(secret_message []byte, key []byte) []byte {
 		return nil
 	}
 
-	var writer bytes.Buffer
-	stream_encoder := base64.NewEncoder(base64.StdEncoding, &writer)
-	stream_encoder.Write(secret_message)
-	stream_encoder.Close()
-	encoded := writer.Bytes()
+	length_to_bytes := make([]byte, 4)
+	binary.LittleEndian.PutUint32(length_to_bytes, uint32(len(secret_message)))
+
+	length_and_secret := append(length_to_bytes, secret_message...)
 
 	IV := GenerateIV()
-	if len(encoded)%16 != 0 {
-		appending := make([]byte, len(encoded)%16)
-		corrected := append(encoded, appending...)
-		encoded = corrected
+	if len(length_and_secret)%16 != 0 {
+		appending := make([]byte, (16 - len(length_and_secret)%16))
+		corrected := append(length_and_secret, appending...)
+		length_and_secret = corrected
 	}
 
 	c := cipher.NewCBCEncrypter(cipher_block, IV)
-	encrypted := make([]byte, len(encoded))
-	c.CryptBlocks(encrypted, encoded)
+	encrypted := make([]byte, len(length_and_secret))
+	c.CryptBlocks(encrypted, length_and_secret)
 
 	return append(IV, encrypted...)
 }
@@ -1612,14 +1611,17 @@ func DecryptBytes(encrypted_message []byte, key []byte) []byte {
 	c := cipher.NewCBCDecrypter(cipher_block, IV)
 	decrypted := make([]byte, len(actual_ciphertext))
 	c.CryptBlocks(decrypted, actual_ciphertext)
-	decrypted_reader := bytes.NewReader(decrypted)
-	decoded_buffer := make([]byte, len(actual_ciphertext))
-	stream_decoder := base64.NewDecoder(base64.StdEncoding, decrypted_reader)
-	_, error := stream_decoder.Read(decoded_buffer)
-	if error != nil {
-		println("Decoding failed! Error: ", error.Error())
-	}
 
-	println("Length decrypted: ", len(decoded_buffer))
-	return decoded_buffer
+	length_bytes := decrypted[0:4]
+	length := binary.LittleEndian.Uint32(length_bytes)
+	decrypted = decrypted[4:]
+	return decrypted[:length]
+}
+
+func EncryptString(message string, key []byte) []byte {
+	return DecryptBytes([]byte(message), key)
+}
+
+func DecryptString(encrypted_message []byte, key []byte) string {
+	return string(DecryptBytes(encrypted_message, key))
 }

@@ -1580,9 +1580,9 @@ func EncryptBytes(secret_message []byte, key []byte) []byte {
 	}
 
 	var writer bytes.Buffer
-	base64.NewEncoder(base64.StdEncoding,&writer)
+	base64.NewEncoder(base64.StdEncoding, &writer)
 	encoded := writer.Bytes()
-	
+
 	IV := GenerateIV()
 	if len(encoded)%16 != 0 {
 		appending := make([]byte, len(encoded)%16)
@@ -1607,20 +1607,9 @@ func DecryptBytes(encrypted_message []byte, key []byte) []byte {
 	c := cipher.NewCBCDecrypter(cipher_block, IV)
 	decrypted := make([]byte, len(actual_ciphertext))
 	c.CryptBlocks(decrypted, actual_ciphertext)
-	found_null := false
-	var first_null int
-	for i := 0; i < len(decrypted); i++ {
-		if decrypted[i] == 0 {
-			found_null = true
-			first_null = i
-			break
-		}
-	}
-	if found_null {
-		decrypted = decrypted[0:(first_null - 1)]
-	}
+
 	var writer bytes.Buffer
-	base64.NewDecoder(base64.StdEncoding,&writer)
+	base64.NewDecoder(base64.StdEncoding, &writer)
 	decoded := writer.Bytes()
 	_, error := base64.StdEncoding.Decode(decoded, decrypted)
 	if error != nil {

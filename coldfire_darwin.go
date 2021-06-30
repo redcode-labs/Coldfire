@@ -8,7 +8,7 @@ package coldfire
 import (
 	"fmt"
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/pkg/disk"
+	// "github.com/minio/minio/pkg/disk" bad dependency
 	ps "github.com/mitchellh/go-ps"
 	"io/ioutil"
 	"os"

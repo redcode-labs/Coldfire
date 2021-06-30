@@ -1,9 +1,10 @@
-module github.com/StrajnarFilip/Coldfire
+module coldfire
 
 go 1.16
 
 require (
 	github.com/anvie/port-scanner v0.0.0-20180225151059-8159197d3770
+	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.12.0
 	github.com/google/gopacket v1.1.19
 	github.com/jackpal/gateway v1.0.7

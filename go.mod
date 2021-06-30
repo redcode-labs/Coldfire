@@ -1,4 +1,4 @@
-module github.com/StrajnarFilip/Coldfire
+module github.com/redcode-labs/Coldfire
 
 go 1.16
 

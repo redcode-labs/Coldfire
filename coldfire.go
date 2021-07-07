@@ -7,7 +7,10 @@ import (
 	"archive/zip"
 	"bufio"
 	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/md5"
+	crandom "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
@@ -47,7 +50,6 @@ var (
 	Bold    = color.New(color.Bold).SprintFunc()
 	Yellow  = color.New(color.FgYellow).SprintFunc()
 	Magenta = color.New(color.FgMagenta).SprintFunc()
-	yellow  = color.New(color.FgYellow).SprintFunc()
 )
 
 // Revert returns a reversed string.
@@ -869,10 +871,11 @@ func SandboxSleep() bool {
 
 // SandboxDisk is used to check if the environment's
 // disk space is less than a given size.
+/* sandboxDisk is missing dependency
 func SandboxDisk(size int) bool {
 	return sandboxDisk(size)
 }
-
+*/
 // SandboxCpu is used to check if the environment's
 // cores are less than a given integer.
 func SandboxCpu(cores int) bool {
@@ -946,7 +949,7 @@ func SandboxAll() bool {
 		SandboxProc(),
 		SandboxFilepath(),
 		SandboxCpu(2),
-		SandboxDisk(50),
+		// SandboxDisk(50), Missing dependency
 		SandboxSleep(),
 		SandboxTmp(10),
 		SandboxProcnum(100),
@@ -973,7 +976,7 @@ func SandboxAlln(num int) bool {
 		SandboxProc(),
 		SandboxFilepath(),
 		SandboxCpu(2),
-		SandboxDisk(50),
+		// SandboxDisk(50), Missing dependency
 		SandboxSleep(),
 		SandboxTmp(10),
 		SandboxTmp(100),
@@ -1283,9 +1286,7 @@ func RdnsLookup(ip string) ([]string, error) {
 }
 
 // CreateUser creates a user with a given username and password.
-func CreateUser(username, password string) error {
-	return CreateUser(username, password)
-}
+// TODO
 
 // WifiDisconnect is used to disconnect the machine from a wireless network.
 func WifiDisconnect() error {
@@ -1551,3 +1552,76 @@ func stamp() {
 func detect_user_interaction() (bool, error) {
 
 }*/
+
+func GenerateKey() []byte {
+	random_bytes := make([]byte, 32)
+	_, err := crandom.Read(random_bytes) // Generates 32 cryptographically secure random bytes
+	if err != nil {
+		println("Failed to generate the key.")
+		return nil
+	}
+	return random_bytes
+}
+
+func GenerateIV() []byte {
+	random_bytes := make([]byte, 16)
+	_, err := crandom.Read(random_bytes) // Generates 16 cryptographically secure random bytes
+	if err != nil {
+		println("Failed to generate IV.")
+		return nil
+	}
+	return random_bytes
+}
+
+func EncryptBytes(secret_message []byte, key []byte) []byte {
+	cipher_block, err := aes.NewCipher(key)
+	if err != nil {
+		println("Error occured, can't encrypt")
+		return nil
+	}
+
+	length_to_bytes := make([]byte, 4)
+	binary.LittleEndian.PutUint32(length_to_bytes, uint32(len(secret_message)))
+
+	length_and_secret := append(length_to_bytes, secret_message...)
+
+	IV := GenerateIV()
+	if len(length_and_secret)%16 != 0 {
+		appending := make([]byte, (16 - len(length_and_secret)%16))
+		corrected := append(length_and_secret, appending...)
+		length_and_secret = corrected
+	}
+
+	c := cipher.NewCBCEncrypter(cipher_block, IV)
+	encrypted := make([]byte, len(length_and_secret))
+	c.CryptBlocks(encrypted, length_and_secret)
+
+	return append(IV, encrypted...)
+}
+
+func DecryptBytes(encrypted_message []byte, key []byte) []byte {
+	IV := encrypted_message[0:16]
+
+	actual_ciphertext := encrypted_message[16:]
+
+	cipher_block, err := aes.NewCipher(key)
+	if err != nil {
+		println("Error occured, can't decrypt")
+	}
+	c := cipher.NewCBCDecrypter(cipher_block, IV)
+	decrypted := make([]byte, len(actual_ciphertext))
+	c.CryptBlocks(decrypted, actual_ciphertext)
+
+	length_bytes := decrypted[0:4]
+	length := binary.LittleEndian.Uint32(length_bytes)
+	decrypted = decrypted[4:]
+	return decrypted[:length]
+}
+
+func EncryptString(message string, key []byte) []byte {
+	return DecryptBytes([]byte(message), key)
+}
+
+func DecryptString(encrypted_message []byte, key []byte) string {
+	return string(DecryptBytes(encrypted_message, key))
+}

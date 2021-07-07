@@ -5,14 +5,15 @@ package coldfire
 
 import (
 	"fmt"
-	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/pkg/disk"
-	ps "github.com/mitchellh/go-ps"
+
+	//"github.com/minio/minio/pkg/disk" broken dependency
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	ps "github.com/mitchellh/go-ps"
 )
 
 func killProcByPID(pid int) error {
@@ -23,15 +24,10 @@ func killProcByPID(pid int) error {
 }
 
 func info() string {
-	var (
-		u string
-	)
-
 	user, err := cmdOut("query user")
 	if err != nil {
 		user = "N/A"
 	}
-	u = user
 
 	// o, err := cmdOut("ipconfig")
 	// if err != nil {
@@ -100,6 +96,7 @@ func sandboxFilepath() bool {
 	}
 }
 
+/* Broken due to lack of dependency: "github.com/minio/minio/pkg/disk"
 func sandboxDisk(size int) bool {
 	v := false
 	d := `C:\`
@@ -115,6 +112,7 @@ func sandboxDisk(size int) bool {
 	}
 	return v
 }
+*/
 
 func sandboxTmp(entries int) bool {
 	tmp_dir := `C:\windows\temp`
@@ -234,7 +232,7 @@ func wipe() error {
 	return nil
 }
 
-func createUser(username, password string) error {
+func CreateUser(username, password string) error {
 	cmd := f("net user %s %s /ADD", username, password)
 
 	_, err := cmdOut(cmd)

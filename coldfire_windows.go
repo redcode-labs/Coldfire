@@ -6,8 +6,6 @@ package coldfire
 import (
 	"fmt"
 
-	//"github.com/minio/minio/pkg/disk" broken dependency
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strconv"
@@ -116,7 +114,7 @@ func sandboxDisk(size int) bool {
 
 func sandboxTmp(entries int) bool {
 	tmp_dir := `C:\windows\temp`
-	files, err := ioutil.ReadDir(tmp_dir)
+	files, err := os.ReadDir(tmp_dir)
 	if err != nil {
 		return true
 	}

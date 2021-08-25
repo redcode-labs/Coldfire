@@ -16,6 +16,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net"
@@ -536,7 +537,7 @@ func ReadFile(filename string) (string, error) {
 	}
 	defer fil.Close()
 
-	b, err := io.ReadAll(fil)
+	b, err := ioutil.ReadAll(fil)
 	if err != nil {
 		return "", err
 	}

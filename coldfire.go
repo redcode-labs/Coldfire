@@ -16,6 +16,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net"
@@ -403,7 +404,7 @@ func GetGlobalIp() string {
 		}
 		defer resp.Body.Close()
 
-		i, _ := io.ReadAll(resp.Body)
+		i, _ := ioutil.ReadAll(resp.Body)
 		ip = string(i)
 
 		if resp.StatusCode == 200 {
@@ -536,7 +537,7 @@ func ReadFile(filename string) (string, error) {
 	}
 	defer fil.Close()
 
-	b, err := io.ReadAll(fil)
+	b, err := ioutil.ReadAll(fil)
 	if err != nil {
 		return "", err
 	}
@@ -1373,7 +1374,7 @@ func GetNgrokURL() (string, error) {
 	}
 	defer resp.Body.Close()
 
-	json, err := io.ReadAll(resp.Body)
+	json, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}

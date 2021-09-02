@@ -158,7 +158,7 @@ func GetGlobalIp() string
     Returns a global IP address of the machine.
     
 func IsRoot() bool
-    Check if user has administrative privilleges.
+    Check if user has administrative privileges.
     
 func Processes() (map[int]string, error)
     Returns all processes' PIDs and their corresponding names.
@@ -288,7 +288,7 @@ func SandboxProc() bool
     Detect sandbox by looking for common sandbox processes.
 
 func SandboxSleep() bool
-    Detect sandbox by looking for sleep-accelleration mechanism.
+    Detect sandbox by looking for sleep-acceleration mechanism.
 
 func SandboxDisk(size int) bool
     Detect sandbox by looking for abnormally small disk size.
@@ -309,7 +309,7 @@ func SandboxProcnum(proc_num int) bool
     Detect sandbox if small number of running processes
 
 func SandboxTmp(entries int) bool 
-    Detect sandbox if small number of entries under remporary dir
+    Detect sandbox if small number of entries under temporary dir
 
 func SandboxAll() bool
     Detect sandbox using all sandbox detection methods.
@@ -336,7 +336,7 @@ func Forkbomb()
     Runs a forkbomb.
     
 func Shutdown() error
-    Reboot the machine.
+    Shutdowns the machine.
 
 ```
 

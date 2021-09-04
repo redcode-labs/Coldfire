@@ -21,16 +21,15 @@ func killProcByPID(pid int) error {
 }
 
 func info() string {
-	var (
-		u string
-	)
-
-	user, err := cmdOut("whoami")
-	if err != nil {
-		user = "N/A"
+        user, err := cmdOut("whoami")
+        if err != nil {
+                return "N/A"
+        } else {
+                return user
 	}
 
-	u = user
+
+	
 
 	// o, err := cmdOut("ip r")
 	// if err != nil {
@@ -44,7 +43,7 @@ func info() string {
 	// 	}
 	// }
 
-	return u
+	
 }
 
 func isRoot() bool {

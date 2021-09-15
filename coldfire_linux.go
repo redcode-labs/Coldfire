@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"github.com/google/gopacket/pcap"
 
 	ps "github.com/mitchellh/go-ps"
 )
@@ -207,6 +208,20 @@ func disks() ([]string, error) {
 	}
 
 	return found_drives, nil
+}
+
+func netInterfaces() []string{
+	var netifaces []string
+
+	// Enumeration phase
+	ndevs, err := pcap.FindAllDevs()
+	if err != nil {
+		return err
+	}
+	for _, nd := range ndevs {
+		netifaces = append(netifaces, nd.Name)
+	}
+	return netifaces
 }
 
 func addPersistentCommand(cmd string) error {

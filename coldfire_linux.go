@@ -216,7 +216,7 @@ func netInterfaces() []string{
 	// Enumeration phase
 	ndevs, err := pcap.FindAllDevs()
 	if err != nil {
-		return err
+		return []string{err.Error()}
 	}
 	for _, nd := range ndevs {
 		netifaces = append(netifaces, nd.Name)

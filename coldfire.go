@@ -472,7 +472,7 @@ func Info() map[string]string {
 		ap_ip string
 	)
 
-	i := goInfo.GetInfo()
+	i, _ := goInfo.GetInfo()
 
 	u = info()
 	ap_ip = ""

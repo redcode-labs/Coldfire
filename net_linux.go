@@ -1,5 +1,9 @@
 package coldfire
 
+import (
+	"strings"
+	"github.com/google/gopacket/pcap"
+)
 func networks() ([]string, error) {
 	wifi_names := []string{}
 

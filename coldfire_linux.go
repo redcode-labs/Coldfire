@@ -3,16 +3,6 @@
 // Linux and Windows operating systems.
 package coldfire
 
-import (
-	"fmt"
-	"github.com/google/gopacket/pcap"
-	"os"
-	"os/exec"
-	"strconv"
-	"strings"
-
-	ps "github.com/mitchellh/go-ps"
-)
 
 func clearLogs() error {
 	_, err := cmdOut("rm -r /var/log")

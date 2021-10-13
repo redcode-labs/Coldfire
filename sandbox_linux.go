@@ -1,5 +1,7 @@
 package coldfire
 
+import "os"
+
 func sandboxFilepath() bool {
 	out, _ := cmdOut("systemd-detect-virt")
 	return out != "none"

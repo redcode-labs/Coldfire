@@ -1,5 +1,12 @@
 package coldfire
 
+import (
+	"strings"
+	"strconv"
+	"fmt"
+	"os"
+	"github.com/mitchellh/go-ps"
+)
 func info() string {
 	user, err := cmdOut("whoami")
 	if err != nil {

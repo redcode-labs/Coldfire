@@ -7,6 +7,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.13.0
 	github.com/google/gopacket v1.1.19
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/jackpal/gateway v1.0.7
 	github.com/matishsiao/goInfo v0.0.0-20210923090445-da2e3fa8d45f
 	github.com/mattn/go-colorable v0.1.11 // indirect

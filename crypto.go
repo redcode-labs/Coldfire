@@ -97,7 +97,7 @@ func MD5Hash(str string) string {
 
 //SHA1Hash hashes a given string using the SHA1.
 func SHA1Hash(str string) string {
-	hashes := sha1.New()
+	hasher := sha1.New()
 	hasher.Write([]byte(str))
 	return hex.EncodeToString(hasher.Sum(nil))
 }

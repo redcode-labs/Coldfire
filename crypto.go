@@ -10,6 +10,8 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"time"
+	"bytes"
 )
 
 func GenerateKey() []byte {

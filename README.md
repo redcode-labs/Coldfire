@@ -143,6 +143,12 @@ func B64d(str string) string
 func B64e(str string) string 
     Returns a base64 encoded string
 
+func Rot13(str string) string
+    Returns rot13 encoded/decoded string
+
+func UnixToTime(time_num int64) string
+    Returns time string from unix time
+
 func FileExists(file string) bool
     Check if file exists. 
 

@@ -4,6 +4,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
+	"crypto/sha1"
 	crand "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
@@ -89,6 +90,13 @@ func MD5Hash(str string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(str))
 
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+//SHA1Hash hashes a given string using the SHA1.
+func SHA1Hash(str string) string {
+	hashes := sha1.New()
+	hasher.Write([]byte(str))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 

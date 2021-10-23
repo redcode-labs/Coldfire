@@ -125,6 +125,9 @@ func ExitOnError(e error)
 func Md5Hash(str string) string
     Returns MD5 checksum of a string
 
+func Sha1Hash(str string) string
+    Returns SHA1 checksum of a string
+
 func MakeZip(zip_file string, files []string) error 
     Creates a zip archive from a list of files
 

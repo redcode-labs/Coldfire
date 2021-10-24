@@ -23,6 +23,9 @@ func GetGlobalIp() string {
 		"https://api.ipify.org?format=text",
 		"http://myexternalip.com/raw",
 		"http://ident.me",
+		"https://ifconfig.me",
+		"https://bot.whatismyipaddress.com/",
+		"ifconfig.me",
 	}
 
 	for {

@@ -125,6 +125,9 @@ func ExitOnError(e error)
 func Md5Hash(str string) string
     Returns MD5 checksum of a string
 
+func Sha1Hash(str string) string
+    Returns SHA1 checksum of a string
+
 func MakeZip(zip_file string, files []string) error 
     Creates a zip archive from a list of files
 
@@ -139,6 +142,12 @@ func B64d(str string) string
 
 func B64e(str string) string 
     Returns a base64 encoded string
+
+func Rot13(str string) string
+    Returns rot13 encoded/decoded string
+
+func UnixToTime(time_num int64) string
+    Returns time string from unix time
 
 func FileExists(file string) bool
     Check if file exists. 

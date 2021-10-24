@@ -4,11 +4,14 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/md5"
+	"crypto/sha1"
 	crand "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"time"
+	"bytes"
 )
 
 func GenerateKey() []byte {
@@ -92,6 +95,13 @@ func MD5Hash(str string) string {
 	return hex.EncodeToString(hasher.Sum(nil))
 }
 
+//SHA1Hash hashes a given string using the SHA1.
+func SHA1Hash(str string) string {
+	hasher := sha1.New()
+	hasher.Write([]byte(str))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
 // B64D decodes a given string encoded in Base64.
 func B64D(str string) string {
 	raw, _ := base64.StdEncoding.DecodeString(str)
@@ -103,3 +113,33 @@ func B64D(str string) string {
 func B64E(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
+
+func R13(data string) string{
+	var finaldata bytes.Buffer
+	for _, character := range data {
+		if character >= 'a' && character <= 'z' {
+			if character >= 'm' {
+				character_tmp := character - 13
+				finaldata.WriteString(string(character_tmp))
+			} else {
+				character_tmp := character + 13
+				finaldata.WriteString(string(character_tmp))
+
+			}
+		}else if character >= 'A' && character <= 'Z' {
+			if character >= 'M' {
+				character_tmp := character - 13
+				finaldata.WriteString(string(character_tmp))
+			} else {
+				character_tmp := character + 13
+				finaldata.WriteString(string(character_tmp))
+			}
+		}
+	}
+	return finaldata.String()
+}
+
+func UnixToTime(time_num int64) string{
+	return time.Unix(time_num, 0).String()
+}
+

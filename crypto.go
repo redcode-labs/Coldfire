@@ -136,7 +136,7 @@ func R13(data string) string{
 			}
 		}
 	}
-	finaldata.String()
+	return finaldata.String()
 }
 
 func UnixToTime(time_num int64) string{

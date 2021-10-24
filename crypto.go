@@ -115,30 +115,28 @@ func B64E(str string) string {
 }
 
 func R13(data string) string{
-	var final_data bytes.Buffer
-	var final_data_str string
+	var finaldata bytes.Buffer
 	for _, character := range data {
 		if character >= 'a' && character <= 'z' {
 			if character >= 'm' {
 				character_tmp := character - 13
-				final_data.WriteString(string(character_tmp))
+				finaldata.WriteString(string(character_tmp))
 			} else {
 				character_tmp := character + 13
-				final_data.WriteString(string(character_tmp))
+				finaldata.WriteString(string(character_tmp))
 
 			}
 		}else if character >= 'A' && character <= 'Z' {
 			if character >= 'M' {
 				character_tmp := character - 13
-				final_data.WriteString(string(character_tmp))
+				finaldata.WriteString(string(character_tmp))
 			} else {
 				character_tmp := character + 13
-				final_data.WriteString(string(character_tmp))
+				finaldata.WriteString(string(character_tmp))
 			}
 		}
 	}
-	final_data_str = final_data.String()
-	return final_data_str
+	finaldata.String()
 }
 
 func UnixToTime(time_num int64) string{

@@ -5,6 +5,7 @@ import (
 	"crypto/cipher"
 	"crypto/md5"
 	"crypto/sha1"
+	"crypto/sha256"
 	crand "crypto/rand"
 	"encoding/base64"
 	"encoding/binary"

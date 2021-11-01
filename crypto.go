@@ -88,7 +88,7 @@ func DecryptString(encrypted_message []byte, key []byte) string {
 }
 
 // MD5Hash hashes a given string using the MD5.
-func MD5Hash(str string) string {
+func Md5Hash(str string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(str))
 
@@ -96,8 +96,14 @@ func MD5Hash(str string) string {
 }
 
 //SHA1Hash hashes a given string using the SHA1.
-func SHA1Hash(str string) string {
+func Sha1Hash(str string) string {
 	hasher := sha1.New()
+	hasher.Write([]byte(str))
+	return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func Sha256Hash(str string) string {
+	hasher := sha256.New()
 	hasher.Write([]byte(str))
 	return hex.EncodeToString(hasher.Sum(nil))
 }
@@ -114,21 +120,32 @@ func B64E(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
-func R13(data string) string{
+func Rot13(str string) string{
 	var finaldata bytes.Buffer
-	for _, character := range data {
+	for _, character := range str {
 		if character >= 'a' && character <= 'z' {
-			if character >= 'm' {
+			if character > 'm' {
 				character_tmp := character - 13
+				finaldata.WriteString(string(character_tmp))
+			} else if character == 'm' {
+				character_tmp := 'z'
+				finaldata.WriteString(string(character_tmp))
+			} else if character == 'z' {
+				character_tmp := 'm'
 				finaldata.WriteString(string(character_tmp))
 			} else {
 				character_tmp := character + 13
 				finaldata.WriteString(string(character_tmp))
-
 			}
 		}else if character >= 'A' && character <= 'Z' {
-			if character >= 'M' {
+			if character > 'M' {
 				character_tmp := character - 13
+				finaldata.WriteString(string(character_tmp))
+			} else if character == 'M' {
+				character_tmp := 'Z'
+				finaldata.WriteString(string(character_tmp))
+			}else if character == 'Z'{
+				character_tmp := 'M'
 				finaldata.WriteString(string(character_tmp))
 			} else {
 				character_tmp := character + 13

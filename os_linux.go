@@ -3,6 +3,8 @@ package coldfire
 import (
 	"strings"
 	"strconv"
+	"syscall"
+	"os/user"
 	"fmt"
 	"os"
 	"github.com/mitchellh/go-ps"
@@ -30,19 +32,19 @@ func info() string {
 }
 
 func killProcByPID(pid int) error {
-	p := strconv.Itoa(pid)
-	cmd := "kill -9 " + p
-	_, err := cmdOut(cmd)
+	err := syscall.Kill(pid,9)
 	return err
 }
 
 func isRoot() bool {
-	root := true
-
-	u, _ := cmdOut("whoami")
-	root = (strings.TrimSuffix(u, "\n") == "root")
-
-	return root
+	user, err := user.Current()
+	if err != nil {
+		panic(err)
+	}
+	if user.Username != "root" {
+		return false
+	}
+	return true
 }
 
 func shutdown() error {

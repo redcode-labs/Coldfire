@@ -2,7 +2,6 @@ package coldfire
 
 import (
 	"strings"
-	"strconv"
 	"syscall"
 	"os/user"
 	"fmt"

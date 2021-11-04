@@ -1,18 +1,21 @@
+// +build windows
 package coldfire
 
 import (
 	"fmt"
 	"os"
-	"strconv"
-
+	"golang.org/x/sys/windows"
 	ps "github.com/mitchellh/go-ps"
 )
 
 func killProcByPID(pid int) error {
-	p := strconv.Itoa(pid)
-	cmd := "taskkill /F /PID " + p
-	_, err := cmdOut(cmd)
-	return err
+	kernel32dll := windows.NewLazyDLL("Kernel32.dll")
+	OpenProcess := kernel32dll.NewProc("OpenProcess")
+	TerminateProcess := kernel32dll.NewProc("TerminateProcess")
+	op , _ , err1 := OpenProcess.Call(0x0001,1,uintptr(pid))
+	if err1 != nil { return err1}
+	_,_,err2 := TerminateProcess.Call(op,9)
+	return err2
 }
 
 func isRoot() bool {

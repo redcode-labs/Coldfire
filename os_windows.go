@@ -13,7 +13,7 @@ func killProcByPID(pid int) error {
 	OpenProcess := kernel32dll.NewProc("OpenProcess")
 	TerminateProcess := kernel32dll.NewProc("TerminateProcess")
 	op , _ , err1 := OpenProcess.Call(0x0001,1,uintptr(pid))
-	if err1 != nil { return err1}
+	//protip:too much error handling can screw things up
 	_,_,err2 := TerminateProcess.Call(op,9)
 	return err2
 }

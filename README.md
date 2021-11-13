@@ -189,7 +189,10 @@ func Info() map[string]string
     Possible fields: username, hostname, go_os, os, 
     platform, cpu_num, kernel, core, local_ip, ap_ip, global_ip, mac.
     If the field cannot be resolved, it defaults to "N/A" value.
-    
+
+func GetUser() string,error
+    Returns current user
+
 func DnsLookup(hostname string) ([]string, error) 
     Performs DNS lookup
 

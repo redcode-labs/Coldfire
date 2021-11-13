@@ -3,7 +3,7 @@ package coldfire
 import (
 	"strings"
 	"syscall"
-	"io/outil"
+	"io/ioutil"
 	"os/user"
 	"fmt"
 	"os"

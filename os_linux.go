@@ -49,9 +49,7 @@ func isRoot() bool {
 
 func shutdown() error {
 	err := syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
-	if err != nil {
-		return err
-	}
+	return err
 }
 
 func pkillAv() error {

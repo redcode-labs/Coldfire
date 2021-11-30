@@ -18,8 +18,6 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/pcap"
 )
 
 var (
@@ -176,7 +174,7 @@ func Remove() {
 
 // CredentialsSniff is used to sniff network traffic for
 // private user information.
-func CredentialsSniff(ifac, interval string,
+/*func CredentialsSniff(ifac, interval string,
 	collector chan string,
 	words []string) error {
 	ifs := []string{}
@@ -217,7 +215,7 @@ func CredentialsSniff(ifac, interval string,
 		}
 	}
 	return nil
-}
+}*/
 
 // Reverse initiates a reverse shell to a given host:port.
 func Reverse(host string, port int) {

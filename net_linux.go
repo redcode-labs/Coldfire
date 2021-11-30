@@ -2,7 +2,7 @@ package coldfire
 
 import (
 	"strings"
-	"github.com/google/gopacket/pcap"
+	//"github.com/google/gopacket/pcap"
 )
 func networks() ([]string, error) {
 	wifi_names := []string{}
@@ -22,16 +22,7 @@ func networks() ([]string, error) {
 	return wifi_names, nil
 }
 
+// Hotfix much appreciated
 func netInterfaces() []string {
-	var netifaces []string
-
-	// Enumeration phase
-	ndevs, err := pcap.FindAllDevs()
-	if err != nil {
-		return []string{err.Error()}
-	}
-	for _, nd := range ndevs {
-		netifaces = append(netifaces, nd.Name)
-	}
-	return netifaces
+	return []string{"wlan0"}
 }

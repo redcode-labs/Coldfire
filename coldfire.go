@@ -5,7 +5,6 @@ package coldfire
 
 import (
 	"bufio"
-	"bytes"
 	"encoding/binary"
 	"fmt"
 	"net"

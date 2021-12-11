@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"os/user"
 	"log"
 	"os"
 	"strings"
@@ -192,3 +193,9 @@ func Shutdown() error {
 func AddPersistentCommand(cmd string) error {
 	return addPersistentCommand(cmd)
 }
+
+func GetUser() (string,error) {
+	current_user, err := user.Current()
+	return current_user.Username,err
+}
+

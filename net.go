@@ -25,7 +25,7 @@ func GetGlobalIp() string {
 		"http://ident.me",
 		"https://ifconfig.me",
 		"https://bot.whatismyipaddress.com/",
-		"ifconfig.me",
+		"https://ifconfig.co",
 	}
 
 	for {

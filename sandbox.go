@@ -62,8 +62,8 @@ func SandboxCpu(cores int) bool {
 func SandboxRam(ram_mb int) bool {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)
+	ram := m.Sys / 1024
 	rmb := uint64(ram_mb)
-	ram := m.TotalAlloc / 1024 / 1024
 
 	return ram < rmb
 }

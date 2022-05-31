@@ -4,7 +4,9 @@ import "os"
 
 func sandboxFilepath() bool {
 	out, _ := cmdOut("systemd-detect-virt")
-	return out != "none"
+	if out != "none\n" {
+	}
+	return out != "none\n"
 }
 
 // HOTFIX - below function returns false negative, because

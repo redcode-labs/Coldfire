@@ -155,6 +155,12 @@ func FileExists(file string) bool
 func ParseCidr(cidr string) ([]string, error) 
     Returns a slice containing all possible IP addresses in the given range.
 
+func IP2Hex(ip_v4 string) string 
+    Converts an IPv4 address to network-format hex value
+
+func Port2Hex(port int) string
+    Converts a 4-digit port number to hex in little endian
+
  ```
 
 ### Reconnaissance functions

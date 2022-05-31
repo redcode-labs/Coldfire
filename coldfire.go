@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/c-robinson/iplib"
 )
 
 var (

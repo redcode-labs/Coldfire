@@ -285,7 +285,7 @@ func IP2Hex(ip string) string {
 // Convert a port to hex
 func Port2Hex(port int) string {
 	hexval := fmt.Sprintf("0x%x", 4444)
-	hexval_without_prefix = FullRemove(hexval, "0x")
+	hexval_without_prefix := FullRemove(hexval, "0x")
 	two_bytes_slice := SplitChunks(hexval, 2)
 	return fmt.Sprintf("0x%s%s", two_bytes_slice[1], two_bytes_slice[0])
 }

@@ -4,10 +4,12 @@ import (
 	"math/rand"
 	"net"
 	"reflect"
+	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"github.com/c-robinson/iplib"
 )
 
 // RemoveFromSlice removes a string from a list of strings if it exists.

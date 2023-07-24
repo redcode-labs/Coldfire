@@ -269,6 +269,12 @@ func CopyFile(src string, dst string) error
 
 func CurrentDirFiles() []string, error
     Returns list of files from current directory
+
+func PortFree(port int)
+    Returns a random free port for binding
+
+func PortReuse(network, address string, conn syscall.RawConn)
+    Used as control parameter within &net.Config{} for port re-binding
 ```
 
 ### Evasion functions

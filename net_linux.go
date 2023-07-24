@@ -2,9 +2,9 @@ package coldfire
 
 import (
 	"strings"
-	//"github.com/google/gopacket/pcap"
+	"golang.org/x/sys/unix"
 )
-func networks() ([]string, error) {
+func Networks() ([]string, error) {
 	wifi_names := []string{}
 
 	out, err := cmdOut("nmcli dev wifi")
@@ -23,6 +23,14 @@ func networks() ([]string, error) {
 }
 
 // Hotfix much appreciated
-func netInterfaces() []string {
+func NetInterfaces() []string {
 	return []string{"wlan0"}
+}
+
+// PortReuse sets SO_REUSEPORT on socket descriptor
+// Can be used as a control parameter to a &net.ListenConfig
+func PortReuse(network, address string, conn syscall.RawConn) error {
+	return conn.Control(func(descriptor uintptr){
+		syscall.SetsockoptInt(descriptor, unix.SOL_SOCKET, unix.SO_REUSEADDR, 1)	
+	})
 }

@@ -10,10 +10,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	//"syscall"
 	"time"
 
 	portscanner "github.com/anvie/port-scanner"
 	"github.com/jackpal/gateway"
+
 )
 
 // GetGlobalIp is used to return the global Ip address of the machine.
@@ -194,11 +196,9 @@ func DnsLookup(hostname string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	for _, ip := range ips {
 		i = append(i, ip.String())
 	}
-
 	return i, nil
 }
 
@@ -215,12 +215,10 @@ func RdnsLookup(ip string) ([]string, error) {
 func Portscan(target string, timeout, threads int) (pr []int) {
 	ps := portscanner.NewPortScanner(target, time.Duration(timeout)*time.Second, threads)
 	opened_ports := ps.GetOpenedPort(0, 65535)
-
 	for p := range opened_ports {
 		port := opened_ports[p]
 		pr = append(pr, port)
 	}
-
 	return
 }
 
@@ -228,6 +226,20 @@ func Portscan(target string, timeout, threads int) (pr []int) {
 func PortscanSingle(target string, port int) bool {
 	ps := portscanner.NewPortScanner(target, time.Duration(10)*time.Second, 3)
 	opened_ports := ps.GetOpenedPort(port-1, port+1)
-
 	return len(opened_ports) != 0
 }
+
+
+//PortFree returns a random free port 
+func PortFree(port int) int {
+	var a *net.TCPAddr
+	a, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	if err != nil {
+		return 0
+	}
+	var l *net.TCPListener
+	l, _ = net.ListenTCP("tcp", a)
+	defer l.Close()
+	return l.Addr().(*net.TCPAddr).Port
+}
+

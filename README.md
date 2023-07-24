@@ -166,10 +166,10 @@ func Port2Hex(port int) string
 ### Reconnaissance functions
 ```
 
-func GetLocalIp() string
+func GetLocalIP() string
     Returns a local IP address of the machine.
 
-func GetGlobalIp() string
+func GetGlobalIP() string
     Returns a global IP address of the machine.
     
 func IsRoot() bool

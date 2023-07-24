@@ -19,7 +19,7 @@ import (
 )
 
 // GetGlobalIp is used to return the global Ip address of the machine.
-func GetGlobalIp() string {
+func GetGlobalIP() string {
 	ip := ""
 	resolvers := []string{
 		"https://api.ipify.org?format=text",
@@ -50,7 +50,7 @@ func GetGlobalIp() string {
 }
 
 // GetLocalIp is used to get the local Ip address of the machine.
-func GetLocalIp() string {
+func GetLocalIP() string {
 	conn, _ := net.Dial("udp", "8.8.8.8:80")
 	defer conn.Close()
 	ip := conn.LocalAddr().(*net.UDPAddr).IP
@@ -75,7 +75,7 @@ func Iface() (string, string) {
 	for _, interf := range interfaces {
 		if addrs, err := interf.Addrs(); err == nil {
 			for _, addr := range addrs {
-				if strings.Contains(addr.String(), GetLocalIp()) {
+				if strings.Contains(addr.String(), GetLocalIP()) {
 					current_iface = interf.Name
 				}
 			}

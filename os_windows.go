@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"golang.org/x/sys/windows"
+	"strings"
 	ps "github.com/mitchellh/go-ps"
 )
 
@@ -29,25 +30,11 @@ func isRoot() bool {
 	return root
 }
 
-func info() string {
+func userinfo() string {
 	user, err := cmdOut("query user")
 	if err != nil {
 		user = "N/A"
 	}
-
-	// o, err := cmdOut("ipconfig")
-	// if err != nil {
-	// 	ap_ip = "N/A" // (1)
-	// }
-
-	// entries := strings.Split(o, "\n")
-
-	// for e := range entries {
-	// 	entry := entries[e]
-	// 	if strings.Contains(entry, "Default") {
-	// 		ap_ip = strings.Split(entry, ":")[1] // (1)
-	// 	}
-	// }
 
 	return user
 }
@@ -120,4 +107,33 @@ func disks() ([]string, error) {
 		}
 	}
 	return found_drives, nil
+}
+
+func users() ([]string, error) {
+	clear := []string{}
+	o, err := cmdOut("net user")
+	if err != nil {
+		return nil, err
+	}
+
+	lines := strings.Split(o, "\n")
+
+	for l := range lines {
+		line := lines[l]
+		if !ContainsAny(line, []string{"accounts for", "------", "completed"}) {
+			clear = append(clear, line)
+		}
+	}
+
+	return clear, nil
+	// return strings.Fields(strings.Join(clear, " ")), nil
+	// usrs := []string{}
+	//   users, err := wapi.ListLoggedInUsers()
+	//   if err != nil {
+	//       return nil, err
+	//   }
+	//   for _, u := range(users){
+	//       usrs = append(usrs, u.FullUser())
+	//   }
+	//   return usrs, nil
 }

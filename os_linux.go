@@ -9,26 +9,14 @@ import (
 	"os"
 	"github.com/mitchellh/go-ps"
 )
-func info() string {
+
+func userinfo() string {
 	user, err := cmdOut("whoami")
 	if err != nil {
 		return "N/A"
 	} else {
 		return user
 	}
-
-	// o, err := cmdOut("ip r")
-	// if err != nil {
-	// 	ap_ip = "N/A" // (1)
-	// }
-	// entries := strings.Split(o, "\n")
-	// for e := range entries {
-	// 	entry := entries[e]
-	// 	if strings.Contains(entry, "default via") {
-	// 		ap_ip = strings.Split(o, "")[2] // (1)
-	// 	}
-	// }
-
 }
 
 func killProcByPID(pid int) error {

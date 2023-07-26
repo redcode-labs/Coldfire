@@ -26,7 +26,7 @@ func Info() map[string]string {
 
 	i, _ := goInfo.GetInfo()
 
-	u = info()
+	u = userinfo()
 	ap_ip = ""
 	_ = ap_ip
 	hdir, err := homedir.Dir()
@@ -43,8 +43,8 @@ func Info() map[string]string {
 		"cpu_num":   fmt.Sprintf("%v", i.CPUs),
 		"kernel":    fmt.Sprintf("%v", i.Kernel),
 		"core":      fmt.Sprintf("%v", i.Core),
-		"local_ip":  GetLocalIp(),
-		"global_ip": GetGlobalIp(),
+		"local_ip":  GetLocalIP(),
+		"global_ip": GetGlobalIP(),
 		"ap_ip":     GetGatewayIP(),
 		"mac":       mac,
 		"homedir":   hdir,

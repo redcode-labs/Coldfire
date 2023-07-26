@@ -22,11 +22,6 @@ func Networks() ([]string, error) {
 	return wifi_names, nil
 }
 
-// Hotfix much appreciated
-func NetInterfaces() []string {
-	return []string{"wlan0"}
-}
-
 // PortReuse sets SO_REUSEPORT on socket descriptor
 // Can be used as a control parameter to a &net.ListenConfig
 func PortReuse(network, address string, conn syscall.RawConn) error {

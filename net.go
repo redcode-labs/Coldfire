@@ -243,3 +243,8 @@ func PortFree(port int) int {
 	return l.Addr().(*net.TCPAddr).Port
 }
 
+// TargetProcessor returns a sorted list of targets based on their RRT pingback value
+//func TargetProcessor(targets []string) []string {
+
+//}
+

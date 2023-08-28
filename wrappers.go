@@ -16,15 +16,20 @@ func f(s string, arg ...interface{}) string {
 	return fmt.Sprintf(s, arg...)
 }
 
-// StrToInt converts a string into an integer.
-func StrToInt(string_integer string) int {
+// F is a wrapper for the Println function.
+func P() {
+	fmt.Println()
+}
+
+// Str2Int converts a string into an integer.
+func Str2Int(string_integer string) int {
 	// i, _ := strconv.ParseInt(string_integer, 10, 32)
 	i, _ := strconv.Atoi(string_integer)
 	return i
 }
 
 // IntToStr converts an integer into a string.
-func IntToStr(i int) string {
+func Int2Str(i int) string {
 	return strconv.Itoa(i)
 }
 

@@ -25,6 +25,13 @@ func ReadFile(filename string) (string, error) {
 	return string(b), nil
 }
 
+func IOReader(file string) io.ReaderAt {
+	r, err := os.Open(file)
+	Check(err)
+	return r
+}
+
+
 // WriteFile is used to write data into a given file.
 func WriteFile(filename, data string) error {
 	file, err := os.Create(filename)

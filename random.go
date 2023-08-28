@@ -35,3 +35,8 @@ func RandomString(n int) string {
 
 	return string(b)
 }
+
+func RandomBool() bool {
+	rand.Seed(time.Now().UnixNano())
+    return rand.Intn(2) == 1
+}

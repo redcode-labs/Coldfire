@@ -12,6 +12,7 @@ import (
 	"strings"
 	//"syscall"
 	"time"
+	"syscall"
 
 	portscanner "github.com/anvie/port-scanner"
 	"github.com/jackpal/gateway"
@@ -229,8 +230,29 @@ func PortscanSingle(target string, port int) bool {
 	return len(opened_ports) != 0
 }
 
+// Returns true if host is alive 
+func Ping(target string) bool {
+	open_counter := 0
+	ports_to_check := []int{80, 443, 21, 22}
+	ps := portscanner.NewPortScanner(target, 2*time.Second, 5)
+	for _, port := range ports_to_check {
+		if ps.IsOpen(port){
+			open_counter += 1
+		}
+	}
+	return true
+}
 
-//PortFree returns a random free port 
+// Removes hosts from slice that did not respond to a ping request
+func RemoveInactive(targets []string) {
+	for i, t := range(targets){
+		if ! Ping(t){
+			targets[i] = ""
+		}
+	}
+}
+
+// Returns a random free port 
 func PortFree(port int) int {
 	var a *net.TCPAddr
 	a, err := net.ResolveTCPAddr("tcp", "localhost:0")
@@ -243,8 +265,14 @@ func PortFree(port int) int {
 	return l.Addr().(*net.TCPAddr).Port
 }
 
-// TargetProcessor returns a sorted list of targets based on their RRT pingback value
-//func TargetProcessor(targets []string) []string {
+func PortReuse(network string, address string, conn syscall.RawConn) error {
+	return portReuse(network, address, conn)
+}
 
-//}
-
+// Gracefully closes an instance of net.Listener
+func CloseListener(lst net.Listener){
+	if lst != nil {
+		lst.Close()
+		lst = nil
+	}
+}

@@ -25,7 +25,7 @@ func networks() ([]string, error) {
 
 // PortReuse sets SO_REUSEPORT on socket descriptor
 // Can be used as a control parameter to a &net.ListenConfig
-func PortReuse(network, address string, conn syscall.RawConn) error {
+func portReuse(network string, address string, conn syscall.RawConn) error {
 	return conn.Control(func(descriptor uintptr){
 		windows.SetsockoptInt(windows.Handle(descriptor), windows.SOL_SOCKET, windows.SO_REUSEADDR, 1)	
 	})

@@ -22,9 +22,7 @@ func Networks() ([]string, error) {
 	return wifi_names, nil
 }
 
-// PortReuse sets SO_REUSEPORT on socket descriptor
-// Can be used as a control parameter to a &net.ListenConfig
-func PortReuse(network, address string, conn syscall.RawConn) error {
+func portReuse(network string, address string, conn syscall.RawConn) error {
 	return conn.Control(func(descriptor uintptr){
 		syscall.SetsockoptInt(descriptor, unix.SOL_SOCKET, unix.SO_REUSEADDR, 1)	
 	})

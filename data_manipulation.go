@@ -128,7 +128,7 @@ func ExtractIntFromString(s string) []int {
 	submatchall := re.FindAllString(s, -1)
 
 	for _, element := range submatchall {
-		res = append(res, StrToInt(element))
+		res = append(res, Str2Int(element))
 	}
 
 	return res
@@ -176,8 +176,8 @@ func Contains(s interface{}, elem interface{}) bool {
 	return false
 }
 
-// StrToWords returns a list of strings which was split by spaces.
-func StrToWords(s string) []string {
+// Str2Words returns a list of strings which was split by spaces.
+func Str2Words(s string) []string {
 	words := []string{}
 	gr := strings.Split(s, " ")
 	for x := range gr {
@@ -189,8 +189,8 @@ func StrToWords(s string) []string {
 	return words
 }
 
-// SizeToBytes converts a human friendly string indicating size into a proper integer.
-func SizeToBytes(size string) int {
+// Size2Bytes converts a human friendly string indicating size into a proper integer.
+func Size2Bytes(size string) int {
 	period_letter := string(size[len(size)-1])
 	intr := string(size[:len(size)-1])
 	i, _ := strconv.Atoi(intr)
@@ -205,8 +205,8 @@ func SizeToBytes(size string) int {
 	return i
 }
 
-// IntervalToSeconds converts a human friendly string indicating time into a proper integer.
-func IntervalToSeconds(interval string) int {
+// Interval2Seconds converts a human friendly string indicating time into a proper integer.
+func Interval2Seconds(interval string) int {
 	period_letter := string(interval[len(interval)-1])
 	intr := string(interval[:len(interval)-1])
 	i, _ := strconv.Atoi(intr)
@@ -248,6 +248,13 @@ func RemoveDuplicatesStr(slice []string) []string {
 		}
 	}
 	return list
+}
+
+func RemoveLast(slic interface{}) interface{}{
+	slen := reflect.ValueOf(slic).Len()
+	v := reflect.ValueOf(slic).Elem()
+    v.Set(reflect.AppendSlice(v.Slice(0, slen), v.Slice(slen+1, v.Len())))
+	return v
 }
 
 // RemoveDuplicatesInt returns an array of integers that are unique to each other.

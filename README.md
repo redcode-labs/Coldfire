@@ -1,6 +1,6 @@
 
 
-<h1 align="center"> ColdFire</h1> <br>
+<h1 align="center"> ColdFire II</h1> <br>
 <p align="center">
   <a>
     <img src="coldfire.png" width="450">
@@ -22,7 +22,7 @@
 
 ## Introduction
 
-ColdFire provides various methods useful for malware and security infra development in Golang.
+ColdFire II provides various methods useful for malware and security infra development in Golang.
 
 Most functions are compatible with both Linux and Windows operating systems.
 
@@ -39,7 +39,7 @@ Most functions are compatible with both Linux and Windows operating systems.
 * Administration
 * Sandbox detection
 * Disruptive
-* Low-evel
+* Low-level
 
 ## Types of functions included (for infra)
 
@@ -66,6 +66,7 @@ Most functions are compatible with both Linux and Windows operating systems.
 "database/sql"
 "github.com/go-sql-driver/mysql"
 "github.com/ztrue/tracerr"
+"github.com/yalue/elf_reader"
 ```
 
 ## Disclaimer

@@ -70,6 +70,10 @@ Most functions are compatible with both Linux and Windows operating systems.
 "github.com/minio/minio/pkg/disk"
 "github.com/dustin/go-humanize"
 "github.com/mitchellh/go-ps"
+"github.com/GeertJohan/yubigo"
+"database/sql"
+"github.com/go-sql-driver/mysql"
+"github.com/ztrue/tracerr"
 ```
 
 ## Disclaimer

@@ -16,21 +16,13 @@
 - [Introduction](#introduction)
 - [Installation](#installation)
 - [Types of functions included](#types-of-functions-included)
-- [Documentation](#documentation)
-  - [Logging functions](#logging-functions)
-  - [Auxiliary functions](#auxiliary-functions)
-  - [Reconnaissance functions](#reconnaissance-functions)
-  - [Administration functions](#administration-functions)
-  - [Evasion functions](#evasion-functions)
-  - [Sandbox detection functions](#sandbox-detection-functions)
-  - [Disruptive functions](#disruptive-functions)
 - [Requirements](#requirements)
 - [Disclaimer](#disclaimer)
 - [License](#license)
 
 ## Introduction
 
-ColdFire provides various methods useful for malware development in Golang.
+ColdFire provides various methods useful for malware and security infra development in Golang.
 
 Most functions are compatible with both Linux and Windows operating systems.
 

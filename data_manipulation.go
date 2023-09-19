@@ -140,7 +140,6 @@ func ShuffleSlice(s []string) []string {
 	rand.Shuffle(len(s), func(i, j int) {
 		s[i], s[j] = s[j], s[i]
 	})
-
 	return s
 }
 
@@ -210,7 +209,6 @@ func Interval2Seconds(interval string) int {
 	period_letter := string(interval[len(interval)-1])
 	intr := string(interval[:len(interval)-1])
 	i, _ := strconv.Atoi(intr)
-
 	switch period_letter {
 	case "s":
 		return i
@@ -240,7 +238,6 @@ func FullRemove(str string, to_remove string) string {
 func RemoveDuplicatesStr(slice []string) []string {
 	keys := make(map[string]bool)
 	list := []string{}
-
 	for _, entry := range slice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
@@ -250,8 +247,12 @@ func RemoveDuplicatesStr(slice []string) []string {
 	return list
 }
 
-func RemoveLast(slic interface{}) interface{}{
-	slen := reflect.ValueOf(slic).Len()
+// Removes Nth index from generic slice if idx != 0; removes last element otherwise
+func RemoveNth(slic interface{}, idx int) interface{}{
+	slen := idx
+	if (idx == 0){
+		slen = reflect.ValueOf(slic).Len()
+	}
 	v := reflect.ValueOf(slic).Elem()
     v.Set(reflect.AppendSlice(v.Slice(0, slen), v.Slice(slen+1, v.Len())))
 	return v
@@ -261,7 +262,6 @@ func RemoveLast(slic interface{}) interface{}{
 func RemoveDuplicatesInt(slice []int) []int {
 	keys := make(map[int]bool)
 	list := []int{}
-
 	for _, entry := range slice {
 		if _, value := keys[entry]; !value {
 			keys[entry] = true
@@ -295,4 +295,21 @@ func Port2Hex(port int) string {
 	hexval_without_prefix := FullRemove(hexval, "0x")
 	two_bytes_slice := SplitChunks(hexval_without_prefix, 2)
 	return fmt.Sprintf("0x%s%s", two_bytes_slice[1], two_bytes_slice[0])
+}
+
+// Returns names of fields ant their values in struct + names of fields with unitialized/empty values
+// -1 value is treated as unitialized int field - you can change "val == -1" according to your needs
+func Introspect(strct interface{}) (map[string]interface{}, []string) {
+	nil_fields := []string{}
+	strctret := make(map[string]interface{})
+    strctval := reflect.ValueOf(strct)
+    for i := 0; i < strctval.NumField(); i++ {
+        val := strctval.Field(i).Interface()
+        fld := strctval.Type().Field(i).Name
+		strctret[fld] = val
+		if (val == -1 || val == nil || val == ""){
+			nil_fields = append(nil_fields, fld)
+		}
+    }
+	return strctret, nil_fields
 }

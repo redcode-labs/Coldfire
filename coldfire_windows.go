@@ -5,7 +5,6 @@ package coldfire
 
 import (
 	"os"
-	"strings"
 )
 
 func shutdown() error {
@@ -13,35 +12,6 @@ func shutdown() error {
 	_, err := cmdOut(c)
 
 	return err
-}
-
-func users() ([]string, error) {
-	clear := []string{}
-	o, err := cmdOut("net user")
-	if err != nil {
-		return nil, err
-	}
-
-	lines := strings.Split(o, "\n")
-
-	for l := range lines {
-		line := lines[l]
-		if !ContainsAny(line, []string{"accounts for", "------", "completed"}) {
-			clear = append(clear, line)
-		}
-	}
-
-	return clear, nil
-	// return strings.Fields(strings.Join(clear, " ")), nil
-	// usrs := []string{}
-	//   users, err := wapi.ListLoggedInUsers()
-	//   if err != nil {
-	//       return nil, err
-	//   }
-	//   for _, u := range(users){
-	//       usrs = append(usrs, u.FullUser())
-	//   }
-	//   return usrs, nil
 }
 
 func clearLogs() error {

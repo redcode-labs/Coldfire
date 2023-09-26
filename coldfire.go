@@ -152,7 +152,7 @@ func Yubi(id, token, otp string) bool {
 	yubikey, err := yubigo.NewYubiAuth(id, token)
 	Check(err)
 	res, ok, err := yubikey.Verify(otp)
-	if (err != nil || ! ok) {
+	if (err != nil || ! ok || ! res) {
 		return false
 	}
 	return true

@@ -20,7 +20,6 @@ import (
     _ "github.com/lib/pq"
 	"github.com/fatih/color"
 	"github.com/GeertJohan/yubigo"
-	"database/sql"
     _ "github.com/go-sql-driver/mysql"
 	"github.com/ztrue/tracerr"
 )
@@ -118,7 +117,6 @@ func IsFileExec(file string) bool {
 
 // Exfiltrates data slowly from either MySQL or Postgres
 func HarvestDB(ip, username, password string, port int){
-	//if (port == 0 || port == )
 	if PortscanSingle(ip, 5400){
 
 	}

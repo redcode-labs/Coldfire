@@ -297,7 +297,7 @@ func Port2Hex(port int) string {
 	return fmt.Sprintf("0x%s%s", two_bytes_slice[1], two_bytes_slice[0])
 }
 
-// Returns names of fields ant their values in struct + names of fields with unitialized/empty values
+// Returns names of fields and their values in struct + names of fields with unitialized/empty values
 // -1 value is treated as unitialized int field - you can change "val == -1" according to your needs
 func Introspect(strct interface{}) (map[string]interface{}, []string) {
 	nil_fields := []string{}

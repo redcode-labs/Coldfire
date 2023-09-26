@@ -109,7 +109,7 @@ func Processes() (map[int]string, error) {
 
 // Users returns a list of known users within the machine.
 func Users() ([]string, error) {
-	return users()
+	return usrs()
 }
 
 // WifiDisconnect is used to disconnect the machine from a wireless network.

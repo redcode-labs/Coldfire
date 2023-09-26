@@ -30,6 +30,10 @@ Most functions are compatible with both Linux and Windows operating systems.
 
 `go get github.com/redcode-labs/Coldfire`
 
+## Docs
+ 
+Coming soon
+
 ## Types of functions included (for maldev)
 
 * Logging

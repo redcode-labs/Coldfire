@@ -109,7 +109,7 @@ func disks() ([]string, error) {
 	return found_drives, nil
 }
 
-func users() ([]string, error) {
+func usrs() ([]string, error) {
 	clear := []string{}
 	o, err := cmdOut("net user")
 	if err != nil {

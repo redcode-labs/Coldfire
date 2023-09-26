@@ -41,9 +41,9 @@ func IsELF(fname string) bool {
 	return true
 }
 
-func IsELFInfected(fname string) bool {
-
-}
+//func IsELFInfected(fname string) bool {
+//
+//}
 
 // Checks if an ELF file is designed for AMD x86_64 
 func IsELF64Bit(fname string) bool {
@@ -56,19 +56,19 @@ func IsELF64Bit(fname string) bool {
 	return false
 }
 
-func Caves(file string, min_size int) map[string]map[string]int {
-	if IsELF(file) {
-		elfile, err := elf.Open(file)
-		Check(err)
-		for _, sect := range elfile.Sections {
-			data, _ := sect.Data()
-			for off := 0; off < len(data); off++{
-				if EqualBytes(data[off], 0x00) {
-					
-				}
-			}
-		}
-	} else {
-
-	}
-}
+//func Caves(file string, min_size int) map[string]map[string]int {
+//	if IsELF(file) {
+//		elfile, err := elf.Open(file)
+//		Check(err)
+//		for _, sect := range elfile.Sections {
+//			data, _ := sect.Data()
+//			for off := 0; off < len(data); off++{
+//				if EqualBytes(data[off], 0x00) {
+//					
+//				}
+//			}
+//		}
+//	} else {
+//
+//	}
+//}

@@ -73,7 +73,6 @@ func RemoveInt(slice []int, s int) []int {
 func SplitJoin(s, splittBy, joinBy string) string {
 	splitted := strings.Split(s, splittBy)
 	joined := strings.Join(splitted, joinBy)
-
 	return joined
 }
 
@@ -81,12 +80,12 @@ func SplitJoin(s, splittBy, joinBy string) string {
 func RevertSlice(s interface{}) {
 	n := reflect.ValueOf(s).Len()
 	swap := reflect.Swapper(s)
-
 	for i, j := 0, n-1; i < j; i, j = i+1, j-1 {
 		swap(i, j)
 	}
 }
 
+// Split a string by multiple sepaators to a single slice
 func SplitMultiSep(s string, seps []string) []string {
 	f := func(c rune) bool {
 		for _, sep := range seps {
@@ -100,6 +99,15 @@ func SplitMultiSep(s string, seps []string) []string {
 	return fields
 }
 
+// Applies a function to each element of a generic slice.
+func SliceTransform(s []interface{}, f func(interface{}) interface{}){
+	slen := reflect.ValueOf(s).Len()
+	for i := 0; i < slen; i++ {
+		s[i] = f(s[i])
+	}
+}
+
+// Split string to a slice with chunks of desired length
 func SplitChunks(s string, chunk int) []string {
 	if chunk >= len(s) {
 		return []string{s}
@@ -126,11 +134,9 @@ func ExtractIntFromString(s string) []int {
 	res := []int{}
 	re := regexp.MustCompile(`[-]?\d[\d,]*[\.]?[\d{2}]*`)
 	submatchall := re.FindAllString(s, -1)
-
 	for _, element := range submatchall {
 		res = append(res, Str2Int(element))
 	}
-
 	return res
 }
 
@@ -271,7 +277,7 @@ func RemoveDuplicatesInt(slice []int) []int {
 	return list
 }
 
-// ContainsAny checks if a string exists within a list of strings.
+// Checks if a string exists within a list of strings.
 func ContainsAny(str string, elements []string) bool {
 	for element := range elements {
 		e := elements[element]
@@ -279,17 +285,16 @@ func ContainsAny(str string, elements []string) bool {
 			return true
 		}
 	}
-
 	return false
 }
 
-// Convert an IPv4 address to hex 
+// Converts an IPv4 address to hex 
 func IP2Hex(ip string) string {
 	ip_obj := net.ParseIP(ip)
 	return iplib.IPToHexString(ip_obj)
 }
 
-// Convert a port to hex
+// Converts a port to hex
 func Port2Hex(port int) string {
 	hexval := fmt.Sprintf("0x%x", port)
 	hexval_without_prefix := FullRemove(hexval, "0x")
@@ -312,4 +317,57 @@ func Introspect(strct interface{}) (map[string]interface{}, []string) {
 		}
     }
 	return strctret, nil_fields
+}
+
+// Checks if a generic is iterable and non-emptty
+func IsIterable(v interface{}) bool {
+    return (reflect.TypeOf(v).Kind() == reflect.Slice && reflect.ValueOf(v).Len() >=1 )
+}
+
+// Generic boolean truth checker
+func BoolCheck(boolean interface{}) bool {
+	bval := reflect.ValueOf(boolean)
+	slen := bval.Len()
+	switch v := boolean.(type) {
+		case []int:
+			if slen != 0 {
+				return true
+			} 
+		case []string:
+			if slen != 0 {
+				return true
+			} 
+		case []bool:
+			if slen != 0 {
+				return true
+			} 
+		case int:
+			if bval.Int() == 1 {
+				return true
+			}
+		case float64:
+			if v == 0.0 {
+				return true
+			}
+		case string:
+			if slen == 0 {
+				return true
+			}
+		case bool:
+			if bval.Bool() {
+				return true
+			}
+	}
+	return false
+}
+
+// Removes values from generics that do noe pass a truthcheck of f()
+func Decimator[T any](s []T, f func(T) bool) []T {
+	var r []T
+	for _, v := range s {
+	  if f(v) {
+		r = append(r, v)
+	  }
+	}
+	return r
 }

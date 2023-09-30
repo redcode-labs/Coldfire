@@ -36,7 +36,26 @@ func RandomString(n int) string {
 	return string(b)
 }
 
+// Returns a random true/false
 func RandomBool() bool {
 	rand.Seed(time.Now().UnixNano())
     return rand.Intn(2) == 1
+}
+
+// Creates and populates a slice with random numeric values up to 1000
+func RandomIntSlice(length int) []int {
+	var slc []int
+    rand.Seed(time.Now().UnixNano())
+    for i:=0; i<length; i++ {
+        slc[i] = rand.Intn(1000)
+    }
+}
+
+func RandomFloatSlice(min, max float64, n int) []float64 {
+    rand.Seed(time.Now().UnixNano())
+    res := make([]float64, n)
+    for i := range res {
+        res[i] = min + rand.Float64() * (max - min)
+    }
+    return res
 }

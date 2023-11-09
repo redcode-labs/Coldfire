@@ -67,6 +67,14 @@ func GetGatewayIP() string {
 	return ip.String()
 }
 
+// Returns an IP address of a given interface
+func IfaceIP(ifname string) string {
+	niface, err := net.InterfaceByName(ifname)
+	addrs, err := niface.Addrs()
+	ExitOnError(err)
+	return addrs[0].(*net.IPNet).IP.String()
+}
+
 // Iface returns the currently used wireless interface and its MAC address.
 func Iface() (string, string) {
 	current_iface := ""

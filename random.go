@@ -47,6 +47,7 @@ func RandomIntSlice(length int) []int {
     for i:=0; i<length; i++ {
         slc[i] = rand.Intn(1000)
     }
+	return slc
 }
 
 func RandomFloatSlice(min, max float64, n int) []float64 {

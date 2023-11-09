@@ -362,7 +362,7 @@ func BoolCheck(boolean interface{}) bool {
 }
 
 // Removes values from generics that do noe pass a truthcheck of f()
-func Decimator[T any](s []T, f func(T) bool) []T {
+/*func Decimator[T any](s []T, f func(T) bool) []T {
 	var r []T
 	for _, v := range s {
 	  if f(v) {
@@ -370,4 +370,4 @@ func Decimator[T any](s []T, f func(T) bool) []T {
 	  }
 	}
 	return r
-}
+}*/

@@ -72,9 +72,10 @@ func Is64Bit(fname string) bool {
 			return true
 		}
 		return false
-	} else {
+	} else if IsEXE(fname) {
 
-	}
+	}	
+	return false
 }
 
 func Caves(file string, min_size int) map[string]map[string]int {
@@ -92,4 +93,5 @@ func Caves(file string, min_size int) map[string]map[string]int {
 	} else {
 
 	}
+	return nil
 }

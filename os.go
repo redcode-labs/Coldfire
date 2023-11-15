@@ -8,9 +8,11 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/matishsiao/goInfo"
 	"github.com/mitchellh/go-homedir"
+	"github.com/beevik/ntp"
 	ps "github.com/mitchellh/go-ps"
 )
 
@@ -51,6 +53,15 @@ func Info() map[string]string {
 	}
 
 	return inf
+}
+
+// Obtains current time from NTP server
+func TimeNTP() time.Time {
+	ntp_time, err := ntp.Time("time.ntp.com")
+	if (err != nil){
+		ntp_time, _ = ntp.Time("time.apple.com")
+	}
+	return ntp_time
 }
 
 // PkillPid kills a process by its PID.

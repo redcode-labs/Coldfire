@@ -1,6 +1,7 @@
 package coldfire
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -10,13 +11,13 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
 	//"syscall"
-	"time"
 	"syscall"
+	"time"
 
 	portscanner "github.com/anvie/port-scanner"
 	"github.com/jackpal/gateway"
-
 )
 
 // GetGlobalIp is used to return the global Ip address of the machine.
@@ -283,4 +284,17 @@ func CloseListener(lst net.Listener){
 		lst.Close()
 		lst = nil
 	}
+}
+
+// Returns a slice with lines of file from URL
+func Url2Lines(url string) []string {
+	resp, err := http.Get(url)
+	Check(err)
+	defer resp.Body.Close()
+	var lns []string
+	scn := bufio.NewScanner(resp.Body)
+	for scn.Scan() {
+		lns = append(lns, scn.Text())
+	}
+	return lns
 }

@@ -34,6 +34,15 @@ func RandomString(n int) string {
 	return string(b)
 }
 
+//RandomStringCharset returns a string of a given length from provided charset
+func RandomStringCharset(strlen int, chars string) string {
+	b := make([]byte, strlen)
+	for i := range b {
+		b[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(b)
+}
+
 // Returns a random true/false
 func RandomBool() bool {
 	rand.Seed(time.Now().UnixNano())

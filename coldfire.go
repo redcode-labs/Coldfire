@@ -70,40 +70,28 @@ func getNTPTime() time.Time {
 func PrintGood(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] %s :: %s \n", Green(t), Green(Bold("[+]")), msg)
+	fmt.Printf("[%s] ~ %s \n", Green(t), msg)
 }
 
 // PrintInfo is used to print output containing information.
 func PrintInfo(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] [*] :: %s\n", t, msg)
+	fmt.Printf("[%s] ~ %s\n", t, msg)
 }
 
 // PrintError is used to print output indicating failure.
 func PrintError(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] %s :: %s \n", Red(t), Red(Bold("[x]")), msg)
+	fmt.Printf("[%s] ~ %s \n", Red(t), msg)
 }
 
 // PrintWarning is used to print output indicating potential failure.
 func PrintWarning(msg string) {
 	dt := time.Now()
 	t := dt.Format("15:04")
-	fmt.Printf("[%s] %s :: %s \n", Yellow(t), Yellow(Bold("[!]")), msg)
-}
-
-// File2Slice reads a textfile and returns all lines as an array.
-func File2Slice(file string) []string {
-	fil, _ := os.Open(file)
-	defer fil.Close()
-	var lines []string
-	scanner := bufio.NewScanner(fil)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-	return lines
+	fmt.Printf("[%s] - %s \n", Yellow(t), msg)
 }
 
 // Returns true if a file is executable

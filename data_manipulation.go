@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"os"
+	"bufio"
 	"time"
 	"github.com/c-robinson/iplib"
 )
@@ -149,6 +151,15 @@ func ShuffleSlice(s []string) []string {
 	return s
 }
 
+// ShuffleSliceInt randomly shuffles a list of integers.
+func ShuffleSliceInt(s []int) []int {
+	rand.Seed(time.Now().UnixNano())
+	rand.Shuffle(len(s), func(i, j int) {
+		s[i], s[j] = s[j], s[i]
+	})
+	return s
+}
+
 // IpIncrement increments an IP address by 1.
 func IpIncrement(ip net.IP) {
 	for j := len(ip) - 1; j >= 0; j-- {
@@ -226,6 +237,18 @@ func Interval2Seconds(interval string) int {
 		return i * 24 * 3600
 	}
 	return i
+}
+
+// File2Slice reads a textfile and returns all lines as an array.
+func File2Slice(file string) []string {
+	fil, _ := os.Open(file)
+	defer fil.Close()
+	var lines []string
+	scanner := bufio.NewScanner(fil)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+	return lines
 }
 
 // RemoveNewLines removes possible newlines from a string.

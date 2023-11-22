@@ -11,6 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"bytes"
 
 	//"syscall"
 	"syscall"
@@ -18,6 +19,7 @@ import (
 
 	portscanner "github.com/anvie/port-scanner"
 	"github.com/jackpal/gateway"
+	"golang.org/x/crypto/ssh"
 )
 
 // GetGlobalIp is used to return the global Ip address of the machine.
@@ -305,4 +307,20 @@ func Url2Lines(url string) []string {
 		lns = append(lns, scn.Text())
 	}
 	return lns
+}
+
+// Checks if an SSH client connection has a root context
+func CheckRootSSH(client ssh.Client) bool {
+	uid0_session := false
+	session, err := client.NewSession()
+	defer session.Close()
+	Check(err)
+	var user_id bytes.Buffer
+	session.Stdout = &user_id
+	if (session.Run("id") != nil){
+		if (ContainsAny(user_id.String(), []string{"uid=0", "gid=0", "root"})){
+			uid0_session = true
+		}
+	}
+	return uid0_session
 }

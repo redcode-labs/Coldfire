@@ -21,7 +21,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/GeertJohan/yubigo"
     _ "github.com/go-sql-driver/mysql"
-	"github.com/secsy/goftp"
+	//"github.com/secsy/goftp"
 	"github.com/ztrue/tracerr"
 )
 
@@ -133,7 +133,7 @@ func ListDB(db *sql.DB, tables bool) []string {
 }
 
 // Generates a reverse shell in a given language to the current machine on arbitrary port
-func LangRevshell(language string, port int, global bool) string {
+/*func LangRevshell(language string, port int, global bool) string {
 	reverse_addr := GetLocalIP()
 	if (global){
 		reverse_addr = GetGlobalIP()	
@@ -164,7 +164,7 @@ func Gratis(ip, username, password string, port int) {
     for _, file := range listing {
         _ = file.Name()
     }
-}
+}*/
 
 // Verifies Yubico OTP
 func Yubi(id, token, otp string) bool {

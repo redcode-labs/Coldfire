@@ -10,6 +10,7 @@ import (
 	"strings"
 	"os"
 	"bufio"
+	"encoding/gob"
 	"time"
 	"github.com/c-robinson/iplib"
 )
@@ -382,6 +383,23 @@ func BoolCheck(boolean interface{}) bool {
 			}
 	}
 	return false
+}
+
+// Unified serializer/deserializer for structs - logic is based on whether a .gob file already exists 
+func Serializer(gobpath string, obj interface{}){
+	if (Exists(gobpath)){
+		gobfile, err := os.Open(gobpath)
+		Check(err)
+		decoder := gob.NewDecoder(gobfile)
+		decoder.Decode(obj)
+		gobfile.Close()
+	} else {
+		gobfile, err := os.Create(gobpath)
+		Check(err)
+		encoder := gob.NewEncoder(gobfile)
+		encoder.Encode(obj)
+		gobfile.Close()
+	}
 }
 
 // Removes values from generics that do noe pass a truthcheck of f()

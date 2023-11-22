@@ -162,7 +162,7 @@ func Gratis(ip, username, password string, port int) {
 	listing, err := connection.ReadDir("/")
 	Check(err)
     for _, file := range listing {
-        //file.Name()
+        _ = file.Name()
     }
 }
 

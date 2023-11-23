@@ -386,3 +386,8 @@ func AutoDoc(port ...int) {
 	}
 	CmdRun(F("godoc -http=:%d", docport))
 }
+
+// Injects a bytearray into current process and executes it
+func RunShellcode(sc []byte, bg bool){
+	runShellcode(sc, bg)
+}

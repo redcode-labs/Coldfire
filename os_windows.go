@@ -1,21 +1,24 @@
+//go:build windows
 // +build windows
+
 package coldfire
 
 import (
 	"fmt"
 	"os"
-	"golang.org/x/sys/windows"
 	"strings"
+
 	ps "github.com/mitchellh/go-ps"
+	"golang.org/x/sys/windows"
 )
 
 func killProcByPID(pid int) error {
 	kernel32dll := windows.NewLazyDLL("Kernel32.dll")
 	OpenProcess := kernel32dll.NewProc("OpenProcess")
 	TerminateProcess := kernel32dll.NewProc("TerminateProcess")
-	op , _ , _ := OpenProcess.Call(0x0001,1,uintptr(pid))
+	op, _, _ := OpenProcess.Call(0x0001, 1, uintptr(pid))
 	//protip:too much error handling can screw things up
-	_,_,err2 := TerminateProcess.Call(op,9)
+	_, _, err2 := TerminateProcess.Call(op, 9)
 	return err2
 }
 
@@ -109,7 +112,7 @@ func disks() ([]string, error) {
 	return found_drives, nil
 }
 
-func usrs() ([]string, error) {
+func users() ([]string, error) {
 	clear := []string{}
 	o, err := cmdOut("net user")
 	if err != nil {

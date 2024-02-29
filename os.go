@@ -4,15 +4,15 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"os/user"
 	"log"
 	"os"
+	"os/user"
 	"strings"
 	"time"
 
+	"github.com/beevik/ntp"
 	"github.com/matishsiao/goInfo"
 	"github.com/mitchellh/go-homedir"
-	"github.com/beevik/ntp"
 	ps "github.com/mitchellh/go-ps"
 )
 
@@ -58,7 +58,7 @@ func Info() map[string]string {
 // Obtains current time from NTP server
 func TimeNTP() time.Time {
 	ntp_time, err := ntp.Time("time.ntp.com")
-	if (err != nil){
+	if err != nil {
 		ntp_time, _ = ntp.Time("time.apple.com")
 	}
 	return ntp_time
@@ -120,7 +120,7 @@ func Processes() (map[int]string, error) {
 
 // Users returns a list of known users within the machine.
 func Users() ([]string, error) {
-	return usrs()
+	return users()
 }
 
 // WifiDisconnect is used to disconnect the machine from a wireless network.
@@ -205,8 +205,7 @@ func AddPersistentCommand(cmd string) error {
 	return addPersistentCommand(cmd)
 }
 
-func GetUser() (string,error) {
+func GetUser() (string, error) {
 	current_user, err := user.Current()
-	return current_user.Username,err
+	return current_user.Username, err
 }
-

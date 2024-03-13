@@ -2,9 +2,12 @@ package coldfire
 
 import (
 	"strings"
+	"syscall"
+
 	"golang.org/x/sys/unix"
 )
-func Networks() ([]string, error) {
+
+func networks() ([]string, error) {
 	wifi_names := []string{}
 
 	out, err := cmdOut("nmcli dev wifi")
@@ -23,7 +26,7 @@ func Networks() ([]string, error) {
 }
 
 func portReuse(network string, address string, conn syscall.RawConn) error {
-	return conn.Control(func(descriptor uintptr){
-		syscall.SetsockoptInt(descriptor, unix.SOL_SOCKET, unix.SO_REUSEADDR, 1)	
+	return conn.Control(func(descriptor uintptr) {
+		syscall.SetsockoptInt(int(descriptor), unix.SOL_SOCKET, unix.SO_REUSEADDR, 1)
 	})
 }

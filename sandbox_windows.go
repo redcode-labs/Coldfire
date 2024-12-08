@@ -33,24 +33,6 @@ func sandboxFilepath() bool {
 	}
 }
 
-/* Broken due to lack of dependency: "github.com/minio/minio/pkg/disk"
-func sandboxDisk(size int) bool {
-	v := false
-	d := `C:\`
-	di, _ := disk.GetInfo(d)
-	x := strings.Replace(humanize.Bytes(di.Total), "GB", "", -1)
-	x = strings.Replace(x, " ", "", -1)
-	z, err := strconv.Atoi(x)
-	if err != nil {
-		fmt.Println(err)
-	}
-	if z < size {
-		v = true
-	}
-	return v
-}
-*/
-
 func sandboxTmp(entries int) bool {
 	tmp_dir := `C:\windows\temp`
 	files, err := os.ReadDir(tmp_dir)

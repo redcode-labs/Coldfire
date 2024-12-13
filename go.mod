@@ -19,6 +19,6 @@ require (
 	github.com/savaki/jq v0.0.0-20161209013833-0e6baecebbf8
 	github.com/yalue/elf_reader v1.0.0
 	github.com/ztrue/tracerr v0.4.0
-	golang.org/x/crypto v0.20.0
-	golang.org/x/sys v0.17.0
+	golang.org/x/crypto v0.31.0
+	golang.org/x/sys v0.28.0
 )
